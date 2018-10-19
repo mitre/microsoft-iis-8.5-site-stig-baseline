@@ -55,5 +55,9 @@ Highlight an Application Pool to review and click \"Advanced Settings\" in the
 
 Scroll down to the \"Process Model\" section and set the value for \"Idle
 Time-out\" to \"20\" or less."
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand idleTimeout | select -expand TotalMinutes').stdout.strip do
+    it {should cmp <= 20}
+  end
 end
+
 

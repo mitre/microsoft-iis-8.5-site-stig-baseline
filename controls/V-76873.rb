@@ -30,9 +30,9 @@ Open the IIS 8.5 Manager.
 
 Perform for each Application Pool.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the “Action”
+Highlight an Application Pool and click \"Advanced Settings\" in the Action
 Pane.
 
 Scroll down to the \"Recycling\" section and expand the \"Generate Recycle
@@ -45,11 +45,11 @@ If both the \"Regular time interval\" and \"Specific time\" options are not set
 to \"True\", this is a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the “Action”
+Highlight an Application Pool and click \"Advanced Settings\" in the Action
 Pane.
 
 Scroll down to the \"Recycling\" section and expand the \"Generate Recycle
@@ -57,5 +57,11 @@ Event Log Entry\" section.
 
 Set both the \"Regular time interval\" and \"Specific time\" options to
 \"True\"."
+   describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip do
+    it {should include 'Time'}
+  end
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip do
+    it {should include 'Schedule'}
+  end
 end
 

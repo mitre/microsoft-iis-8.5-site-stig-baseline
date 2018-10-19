@@ -32,7 +32,7 @@ Click on the site name.
 
 Double-click the \"Request Filtering\" icon.
 
-Click “Edit Feature Settings” in the \"Actions\" pane.
+Click Edit Feature Settings in the \"Actions\" pane.
 
 If the \"Maximum Query String\" value is not set to \"2048\" or less, this is a
 finding."
@@ -45,8 +45,11 @@ Click the site name under review.
 
 Double-click the \"Request Filtering\" icon.
 
-Click “Edit Feature Settings” in the \"Actions\" pane.
+Click Edit Feature Settings in the \"Actions\" pane.
 
 Set the \"Maximum Query String\" value to \"2048\" or less."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxQueryString').stdout.strip do
+    it {should cmp <= 2048}
+  end
 end
 

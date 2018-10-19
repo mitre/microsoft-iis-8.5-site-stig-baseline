@@ -27,7 +27,7 @@ process crash potentially leaving the web server unusable."
   tag "ia_controls": nil
   tag "check": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
@@ -41,7 +41,7 @@ If the \"Rapid Fail Protection:Enabled\" is not set to \"True\", this is a
 finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
@@ -51,6 +51,9 @@ Highlight an Application Pool to review and click \"Advanced Settings\" in the
 Scroll down to the \"Rapid Fail Protection\" section and set the value for
 \"Enabled\" to \"True\".
 
-Click “OK”."
+Click OK."
+   describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip do
+    it {should cmp 'True'}
+  end
 end
 

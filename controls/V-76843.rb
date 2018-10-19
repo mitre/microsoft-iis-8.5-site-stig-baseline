@@ -78,5 +78,16 @@ If necessary, stop the IIS 8.5 web server by selecting the web server in the
 IIS 8.5 Manager.
 
 In the \"Actions\" pane, under \"Manage Server\", click on \"Stop\"."
+  describe command("iisreset /stop").stdout.strip do
+    it {should include "Internet services successfully stopped"}
+  end
+
+  describe command("Get-IISSite \"#{IIS_SITE_NAME}\" | select -expandProperty state").stdout.strip do
+    it {should cmp "Stopped"}
+  end
+
+  describe command("iisreset /start").stdout.strip do
+    it {should include "Internet services successfully started"}
+  end
 end
 

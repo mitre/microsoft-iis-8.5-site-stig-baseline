@@ -56,5 +56,8 @@ Expand the \"session\" section.
 Select \"True\" for the \"keepSessionIdSecure\" setting.
 
 Select \"Apply\" from the \"Actions\" pane."
+ describe command('Get-WebConfigurationProperty -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip do
+    it {should cmp 'True'}
+  end
 end
 

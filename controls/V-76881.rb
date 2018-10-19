@@ -29,7 +29,7 @@ unhealthy conditions."
   tag "ia_controls": nil
   tag "check": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
@@ -42,7 +42,7 @@ Scroll down to the \"Rapid Fail Protection\" section and verify the value for
 If the \"Failure Interval\" is not set to \"5\" or less, this is a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
@@ -52,6 +52,9 @@ Highlight an Application Pool to review and click \"Advanced Settings\" in the
 Scroll down to the \"Rapid Fail Protection\" section and set the value for
 \"Failure Interval\" to \"5\" or less.
 
-Click “OK”."
+Click OK."
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtectionInterval | select -expand TotalMinutes').stdout.strip do
+    it {should cmp <= 5}
+  end
 end
 

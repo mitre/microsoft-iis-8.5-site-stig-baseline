@@ -94,5 +94,8 @@ Click on the drop-down list for \"sslFlags\".
 Select the \"Ssl128\" check box.
 
 Click \"Apply\" in the \"Actions\" pane."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+    it {should cmp 'ssl128'}
+  end
 end
-
+ 

@@ -45,5 +45,8 @@ Click the Site.
 Double-click the \"Directory Browsing\" icon.
 
 Under the \"Actions\" pane click \"Disabled\"."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/directoryBrowse -name * | select -expand enabled').stdout.strip do
+    it {should cmp 'False'}
+  end
 end
 

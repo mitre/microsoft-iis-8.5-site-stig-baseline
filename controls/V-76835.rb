@@ -50,5 +50,8 @@ Double-click the \"Error Pages\" icon.
 Click each error message and click \"Edit Feature\" Setting from the
 \"Actions\" pane; set each error message to “Detailed errors for local requests
 and custom error pages for remote requests”."
+  describe command("Get-WebConfigurationProperty -filter \"system.webServer/httpErrors\" -Name errorMode").stdout.strip do
+    it {should cmp "DetailedLocalOnly"}
+  end
 end
 

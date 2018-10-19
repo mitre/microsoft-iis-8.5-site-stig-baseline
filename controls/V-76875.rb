@@ -26,7 +26,7 @@ those settings controlling requests to the application pool."
 
 Perform for each Application Pool.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Highlight an Application Pool to review and click \"Advanced Settings\" in the
 \"Actions\" pane.
@@ -37,14 +37,17 @@ Length\" is set to 1000.
 If the \"Queue Length\" is set to \"1000\" or less, this is not a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Highlight an Application Pool to review and click \"Advanced Settings\" in the
 \"Actions\" pane.
 
-Scroll down to the “General” section and set the value for “Queue Length” to
-“1000” or less.
+Scroll down to the General section and set the value for Queue Length to
+1000 or less.
 
-Click “OK”."
+Click OK."
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip do
+    it {should cmp <= '1000'}
+  end
 end
 

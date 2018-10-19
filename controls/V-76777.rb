@@ -83,9 +83,12 @@ Click the site name.
 Under the ASP.NET section, select \"Session State\".
 
 Under \"Cookie Settings\", select the \"Use Cookies\" from the \"Mode:\"
-drop-down list.
+drop-dowssn list.
 
 Select \"Apply\" from the \"Actions\" pane.
 "
+  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand cookieless').stdout.strip do
+    it {should cmp "UseCookies"}
+  end
 end
 

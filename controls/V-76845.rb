@@ -1,3 +1,9 @@
+LOG_DIRECTORY= attribute(
+    'log_directory',
+    description: 'Name of Tomcat service',
+    default: '%SystemDrive%\inetpub\logs\LogFiles'
+)
+
 control "V-76845" do
   title "The IIS 8.5 website must use a logging mechanism that is configured to
 allocate log record storage capacity large enough to accommodate the logging
@@ -68,5 +74,11 @@ Under \"Log File Rollover\", deselect the \"Do not create new log files\"
 setting.
 
 Configure a schedule to rollover log files on a regular basis."
+  describe command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty directory').stdout.strip do
+    it {should cmp "#{LOG_DIRECTORY}"}
+  end
+  describe command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty period').stdout.strip do
+    it {should cmp "Daily"}
+  end
 end
 

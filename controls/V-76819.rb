@@ -49,5 +49,8 @@ Double-click the \"Request Filtering\" icon.
 Click “Edit Feature Settings” in the \"Actions\" pane.
 
 Set the \"maxAllowedContentLength\" value to \"30000000\" or less."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxAllowedContentLength').stdout.strip do
+    it {should cmp <= 30000000 }
+  end
 end
 

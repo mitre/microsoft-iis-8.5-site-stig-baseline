@@ -30,7 +30,7 @@ caused by an application."
   tag "ia_controls": nil
   tag "check": "Open the Internet Information Services (IIS) Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
@@ -43,7 +43,7 @@ Enabled\" is set to \"True\".
 If the value for \"Ping Enabled\" is not set to \"True\", this is a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
 Perform for each Application Pool.
 
@@ -53,6 +53,9 @@ Highlight an Application Pool to review and click \"Advanced Settings\" in the
 Scroll down to the \"Process Model\" section and set the value for \"Ping
 Enabled\" to \"True\".
 
-Click “OK”."
+Click OK."
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip do
+    it {should cmp 'True'}
+  end
 end
 

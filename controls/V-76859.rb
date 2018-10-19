@@ -85,5 +85,8 @@ From the \"Section:\" drop-down list, select \"system.web/sessionState\".
 Set the \"compressionEnabled\" to \"False\".
 
 Select \"Apply\" from the \"Actions\" pane."
+  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand compressionEnabled').stdout.strip do
+    it {should cmp 'False'}
+  end
 end
 

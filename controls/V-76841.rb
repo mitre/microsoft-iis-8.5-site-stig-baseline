@@ -68,5 +68,8 @@ medium-value applications, and 20 minutes for low-value applications.
 
 In the \"Actions\" pane, click \"Apply\".
 "
+  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand timeout | select -expand TotalMinutes').stdout.strip do
+    it {should cmp <= 20}
+  end
 end
 

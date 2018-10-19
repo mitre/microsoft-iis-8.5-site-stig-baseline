@@ -35,7 +35,7 @@ Click on the site name.
 
 Double-click the \"Request Filtering\" icon.
 
-Click “Edit Feature Settings” in the \"Actions\" pane.
+Click Edit Feature Settings in the \"Actions\" pane.
 
 If \"Allow unlisted file extensions\" check box is checked, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
@@ -47,8 +47,11 @@ Click the site name under review.
 
 Double-click the \"Request Filtering\" icon.
 
-Click “Edit Feature Settings” in the \"Actions\" pane.
+Click Edit Feature Settings in the \"Actions\" pane.
 
 Uncheck the \"Allow unlisted file extensions\" check box."
+describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand fileExtensions | select - expand allowUnlisted').stdout.strip do
+    it {should cmp 'False'}
+  end
 end
 

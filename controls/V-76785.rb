@@ -61,5 +61,30 @@ Under Log Event Destination, select the \"Both log file and ETW event\" radio
 button.
 
 Select \"Apply\" from the \"Actions\" pane."
+  describe windows_feature('Web-Server') do
+    it { should be_installed }
+  end
+  describe windows_feature('Web-WebServer') do
+    it { should be_installed }
+  end
+  describe windows_feature('Web-Common-Http') do
+    it { should be_installed }
+  end
+
+
+  iis_modules = command("Get-WebConfiguration  system.webServer/globalModules/*").stdout.strip
+
+  describe "Is required IIS Module for ETW (Tracing) installed " do
+    subject { iis_modules }
+    it { should include 'TracingModule' }
+  end
+
+  iis_logging_configuration = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "System.Applicationhost/Sites/SiteDefaults/logfile"  -name logTargetW3C').stdout.strip.split(",")
+
+  describe "IIS Logging configuration   " do
+    subject { iis_logging_configuration }
+    it { should include 'File' }
+    it { should include 'ETW' }
+  end
 end
 

@@ -33,7 +33,7 @@ Click on the site name.
 
 Double-click the \"Request Filtering\" icon.
 
-Click “Edit Feature Settings” in the \"Actions\" pane.
+Click Edit Feature Settings in the \"Actions\" pane.
 
 If the \"maxUrl\" value is not set to \"4096\" or less, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
@@ -43,8 +43,11 @@ Click the site name under review.
 
 Double-click the \"Request Filtering\" icon.
 
-Click “Edit Feature Settings” in the \"Actions\" pane.
+Click Edit Feature Settings in the \"Actions\" pane.
 
 Set the \"maxURL\" value to \"4096\" or less."
-end
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxUrl').stdout.strip do
+    it {should cmp <= 4096 }
+  end
+end 
 

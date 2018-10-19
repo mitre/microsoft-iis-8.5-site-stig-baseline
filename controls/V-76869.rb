@@ -51,17 +51,20 @@ If the value for \"Virtual Memory Limit\" is set to 0, this is a finding.
 "
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click on “Application Pools”.
+Click on Application Pools.
 
 Perform for each Application Pool.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the “Action”
+Highlight an Application Pool and click \"Advanced Settings\" in the Action
 Pane.
 
 In the \"Advanced Settings\" dialog box scroll down to the \"Recycling\"
 section and set the value for \"Virtual Memory Limit\" to a value other than
 \"0\".
 
-Click “OK”."
+Click OK."
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand memory').stdout.strip do
+    it {should_not cmp 0 }
+  end
 end
 

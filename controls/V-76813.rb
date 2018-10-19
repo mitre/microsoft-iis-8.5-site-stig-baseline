@@ -28,7 +28,7 @@ the same input criteria, must generate an unrelated random ID.
   tag "documentable": false
   tag "mitigations": nil
   tag "severity_override_guidance": false
-  tag "potential_impacts": nil
+  tag "potential_impacts": nil 
   tag "third_party_tools": nil
   tag "mitigation_controls": nil
   tag "responsibility": nil
@@ -69,5 +69,8 @@ Click the site name.
 Under the ASP.NET section, select \"Session State\".
 
 Under \"Session State\" Mode Settings, select the \"In Process\" mode."
+  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip do
+    it {should cmp "InProc"}
+  end
 end
 

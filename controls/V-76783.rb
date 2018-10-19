@@ -1,3 +1,9 @@
+LOG_FIELDS = attribute(
+    'fields',
+    description: 'List of fields to be included in Web Server Logging Configuration',
+    default: ['Date', 'Time', 'Client IP Address', 'User Name', 'Method', 'URI Query', 'Protocol Status', 'Referrer']
+)
+
 control "V-76783" do
   title "The enhanced logging for each IIS 8.5 website must be enabled and
 capture, record, and log all content related to a user session."
@@ -73,5 +79,31 @@ Select the following fields: Date, Time, Client IP Address, User Name, Method,
 URI Query, Protocol Status, and Referrer.
 
 Select \"Apply\" from the \"Actions\" pane."
+s_file_logging_enabled_string = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand enabled").stdout.strip
+  is_file_logging_enabled = (is_file_logging_enabled_string == 'False' || is_file_logging_enabled_string == '') ? false : true
+
+  logging_fields = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand logExtFileFlags").stdout.strip.split(',')
+
+  describe windows_feature('Web-Server') do
+    it{ should be_installed }
+  end
+  describe windows_feature('Web-WebServer') do
+    it{ should be_installed }
+  end
+  describe windows_feature('Web-Common-Http') do
+    it{ should be_installed }
+  end
+
+  describe "Is Web Server Central W3C Logging Configuration Enabled" do
+    subject { is_file_logging_enabled }
+    it { should be true }
+  end
+
+
+  logging_fields.each do |myField|
+    describe "#{myField}" do
+      it { should be_in logging_fields}
+    end
+  end
 end
 

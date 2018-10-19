@@ -36,9 +36,9 @@ Open the IIS 8.5 Manager.
 
 Perform for each Application Pool.
 
-Click the “Application Pools”.
+Click the Application Pools.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the “Action”
+Highlight an Application Pool and click \"Advanced Settings\" in the Action
 Pane.
 
 Scroll down to the \"Recycling section\" and verify the value for \"Request
@@ -47,15 +47,18 @@ Limit\" is set to a value other than \"0\".
 If the \"Request Limit\" is set to a value of \"0\", this is a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click on the “Application Pools”.
+Click on the Application Pools.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the “Action”
+Highlight an Application Pool and click \"Advanced Settings\" in the Action
 Pane.
 
 Scroll down to the \"Recycling section\" and set the value for \"Request
 Limit\" to greater than \"0\".
 
-Click “OK”.
+Click OK.
 "
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip do
+    it {should cmp > 0 }
+  end
 end
 
