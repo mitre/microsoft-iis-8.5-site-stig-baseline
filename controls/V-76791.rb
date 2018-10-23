@@ -1,3 +1,9 @@
+LOG_FIELDS = attribute(
+    'fields',
+    description: 'List of fields to be included in Web Server Logging Configuration',
+    default: ['UserAgent', 'UserName', 'Referer']
+)
+
 control "V-76791" do
   title "The IIS 8.5 website must produce log records containing sufficient
 information to establish the identity of any user/subject or process associated
@@ -88,5 +94,31 @@ Response Header >> Content-Type
 Click \"OK\".
 
 Select \"Apply\" from the \"Actions\" pane."
+
+fields = LOG_FIELDS
+  logging_fields = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand logExtFileFlags").stdout.strip.split(',')
+
+
+  fields.each do |myField|
+    describe "#{myField}" do
+      it { should be_in logging_fields}
+    end
+   
+end
+  log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/siteDefaults/logFile" -name "logFormat"').stdout.strip
+
+  describe "IIS Logging format" do
+    subject { log_format }
+    it { should cmp 'W3C' }
+  end
+
+  custom_field_configuration = command('Get-WebConfiguration -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/siteDefaults/logFile/customFields/*"').stdout.strip
+  describe "IIS Custom Fields logging configuration" do
+    subject { custom_field_configuration }
+    it { should match /sourceName\s+:\s+User-Agent\s+sourceType\s+:\s+RequestHeader/}
+    it { should match /sourceName\s+:\s+Authorization\s+sourceType\s+:\s+RequestHeader/}
+    it { should match /sourceName\s+:\s+Content-Type\s+sourceType\s+:\s+ServerVariable/}
+  end
+
 end
 

@@ -78,5 +78,9 @@ If the access-controlled website does not display this banner page before
 entry, this is a finding."
   tag "fix": "Configure a DoD private website to display the required DoD
 banner page when authentication is required for user access."
-end
+  describe "Manual review of website is needed" do
+    skip "The required DoD banner page must be displayed to authenticated users
+    accessing a DoD private website"
+  end
+end 
 

@@ -20,7 +20,7 @@ instead."
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
-  tag "mitigations": nil
+  tag "mitigations": nil 
   tag "severity_override_guidance": false
   tag "potential_impacts": nil
   tag "third_party_tools": nil
@@ -32,21 +32,24 @@ web server:
 
 Open the IIS 8.5 Manager.
 
-Double-click “Configuration Editor”.
+Double-click Configuration Editor.
 
-From the drop-down box select “system.webserver serverRuntime”.
+From the drop-down box select system.webserver serverRuntime.
 
-If “alternateHostName” has no assigned value, this is a finding."
+If alternateHostName has no assigned value, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
 web server:
 
 Open the IIS 8.5 Manager.
 
-Double-click “Configuration Editor”.
+Double-click Configuration Editor.
 
-Click the drop-down box located at the top of the “Configuration Editor” Pane.
+Click the drop-down box located at the top of the Configuration Editor Pane.
 
-Scroll until the “system.webserver/serverRuntime” is found, double-click the
+Scroll until the system.webserver/serverRuntime is found, double-click the
 element, and add the appropriate value."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/serverRuntime -name * | select -expand alternateHostName').stdout.strip do
+    it {should_not cmp ''}
+  end
 end
 

@@ -3,10 +3,10 @@ control "V-76831" do
 displayed."
   desc  "The goal is to control the web users experience in navigating any
 portion of the web document root directories. Ensuring all web content
-directories have at least the equivalent of an index.html file is a significant
-factor to accomplish this end. Also, enumeration techniques, such as URL
-parameter manipulation, rely upon being able to obtain information about the
-web server’s directory structure by locating directories with default pages.
+directories have at least the equivalent of an indexhtml file is a significant
+factor to accomplish this end. Also enumeration techniques such as URL
+parameter manipulation rely upon being able to obtain information about the
+web servers directory structure by locating directories with default pages
 This practice helps ensure the anonymous web user will not obtain directory
 browsing information or an error message revealing the server type and version."
   impact 0.7
@@ -57,10 +57,13 @@ Click the site name under review.
 
 Double-click \"Default Document\".
 
-In the “Actions” pane select \"Enable\".
+In the Actions pane select \"Enable\".
 
 Click the \"Content View\" tab, click on each listed \"Default Document\" and
 click on \"Explore\" under the \"Actions\" pane. Create a valid document for
 the listed \"Default Document\"."
+is_default_document_enabled = command('Get-WebConfigurationProperty -Filter system.webServer/defaultDocument -name * | select -expand enabled').stdout.strip
+puts is_default_document_enabled
+it should not equal falase
 end
 

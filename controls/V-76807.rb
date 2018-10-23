@@ -1,4 +1,4 @@
-control "V-76807" do
+ control "V-76807" do
   title "Each IIS 8.5 website must be assigned a default host header."
   desc  "The web server must be configured to listen on a specified IP address
 and port. Without specifying an IP address and port for the web server to
@@ -60,4 +60,6 @@ Click \"OK\".
 
 Select \"Apply\" from the \"Actions\" pane."
 end
+
+Get-WebBinding -Name "Default Web Site"
 

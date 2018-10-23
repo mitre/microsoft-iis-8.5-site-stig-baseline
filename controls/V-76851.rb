@@ -41,7 +41,7 @@ website code revealing business logic, or other user personal information.
   tag "severity_override_guidance": false
   tag "potential_impacts": nil
   tag "third_party_tools": nil
-  tag "mitigation_controls": nil
+  tag "mitigation_controls": nil 
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
@@ -50,7 +50,7 @@ web server:
 Open the IIS 8.5 Manager.
 
 Double-click the \"SSL Settings\" icon under the \"IIS\" section.
-
+ 
 Verify \"Require SSL\" is checked.
 
 Verify \"Client Certificates Required\" is selected.
@@ -60,7 +60,7 @@ Click the site under review.
 Select \"Configuration Editor\" under the \"Management\" section.
 
 From the \"Section:\" drop-down list at the top of the configuration editor,
-locate “system.webServer/security/access”.
+locate system.webServer/security/access.
 
 The value for \"sslFlags\" set must include \"ssl128\".
 
@@ -87,7 +87,7 @@ Click the site under review.
 Select \"Configuration Editor\" under the \"Management\" section.
 
 From the \"Section:\" drop-down list at the top of the configuration editor,
-locate “system.webServer/security/access”.
+locate system.webServer/security/access.
 
 Click on the drop-down list for \"sslFlags\".
 
@@ -95,7 +95,10 @@ Select the \"Ssl128\" check box.
 
 Click \"Apply\" in the \"Actions\" pane."
   describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
-    it {should cmp 'ssl128'}
+    it {should include 'Ssl'}
+  end
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+    it {should include 'Ssl128'}
   end
 end
  

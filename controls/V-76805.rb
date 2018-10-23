@@ -31,7 +31,7 @@ application could cause to a system.
   tag "severity_override_guidance": false
   tag "potential_impacts": nil
   tag "third_party_tools": nil
-  tag "mitigation_controls": nil
+  tag "mitigation_controls": nil 
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Note: If the server being reviewed is a non-production website,
@@ -58,9 +58,12 @@ Click the site name under review.
 
 Double-click the \".NET Trust Level\" icon.
 
-Set the \".NET Trust Level\" to Full or less and click “Apply”.
+Set the \".NET Trust Level\" to Full or less and click Apply.
 
 Select \"Apply\" from the \"Actions\" pane.
 "
+  describe command('Get-WebConfigurationProperty -Filter system.web/trust -name * | select -expand level').stdout.strip do
+    it {should cmp 'Full' }
+  end
 end
 

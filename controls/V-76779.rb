@@ -57,5 +57,8 @@ Double-click the \"SSL Settings\" icon.
 Select \"Require SSL\" check box.
 
 Select \"Apply\" from the \"Actions\" pane."
+ describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+    it {should include 'Ssl'}
+  end
 end
 

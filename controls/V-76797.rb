@@ -65,7 +65,7 @@ Open the IIS 8.5 Manager.
 
 Click on the IIS 8.5 site.
 
-Under IIS, double-click the “MIME Types” icon.
+Under IIS, double-click the MIME Types icon.
 
 From the \"Group by:\" drop-down list, select \"Content Type\".
 
@@ -79,5 +79,20 @@ shell program extensions, to include at a minimum, the following extensions:
 .csh
 
 Select \"Apply\" from the \"Actions\" pane."
+  describe command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.exe'}").stdout.strip do
+    it {should cmp ''}
+  end
+  describe command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.dll'}").stdout.strip do
+    it {should cmp ''}
+  end
+  describe command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.com'}").stdout.strip do
+    it {should cmp ''}
+  end
+  describe command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.bat'}").stdout.strip do
+    it {should cmp ''}
+  end
+  describe command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.csh'}").stdout.strip do
+    it {should cmp ''}
+  end
 end
 

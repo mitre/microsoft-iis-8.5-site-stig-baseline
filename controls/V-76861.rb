@@ -86,7 +86,10 @@ Double-click the \"SSL Settings\" icon.
 
 Select \"Require SSL\" check box."
  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
-    it {should cmp 'ssl128'}
+    it {should include 'Ssl'}
+  end
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+    it {should include 'Ssl128'}
   end
 end
 

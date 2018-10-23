@@ -55,7 +55,7 @@ Select the \"Fields\" button.
 Under \"Custom Fields\", verify the following fields are selected:
 
 Request Header >> Connection
-
+ 
 Request Header >> Warning
 
 Server Variable >> HTTP_CONNECTION

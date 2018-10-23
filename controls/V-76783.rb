@@ -1,7 +1,7 @@
 LOG_FIELDS = attribute(
     'fields',
     description: 'List of fields to be included in Web Server Logging Configuration',
-    default: ['Date', 'Time', 'Client IP Address', 'User Name', 'Method', 'URI Query', 'Protocol Status', 'Referrer']
+    default: ['Date', 'Time', 'ClientIP', 'UserName', 'Method', 'UriQuery', 'HttpStatus', 'Referer']
 )
 
 control "V-76783" do
@@ -58,7 +58,7 @@ Click the \"Logging\" icon.
 
 Under Format select \"W3C\".
 
-Click “Select Fields”, verify at a minimum the following fields are checked:
+Click Select Fields, verify at a minimum the following fields are checked:
 Date, Time, Client IP Address, User Name, Method, URI Query, Protocol Status,
 and Referrer.
 
@@ -67,7 +67,7 @@ fields are not selected, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
 web server:
 
-Open the IIS 8.5 Manager.
+Open the IIS 8.5 Manager. 
 
 Click the site name.
 
@@ -79,10 +79,14 @@ Select the following fields: Date, Time, Client IP Address, User Name, Method,
 URI Query, Protocol Status, and Referrer.
 
 Select \"Apply\" from the \"Actions\" pane."
-s_file_logging_enabled_string = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand enabled").stdout.strip
+is_file_logging_enabled_string = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand enabled").stdout.strip
   is_file_logging_enabled = (is_file_logging_enabled_string == 'False' || is_file_logging_enabled_string == '') ? false : true
 
-  logging_fields = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand logExtFileFlags").stdout.strip.split(',')
+  logging_fields = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand logExtFileFlags").stdout.strip.split(',')
+  fields = LOG_FIELDS
+
+  puts logging_fields
+
 
   describe windows_feature('Web-Server') do
     it{ should be_installed }
@@ -98,12 +102,14 @@ s_file_logging_enabled_string = command("Get-WebConfiguration system.application
     subject { is_file_logging_enabled }
     it { should be true }
   end
-
-
-  logging_fields.each do |myField|
+ 
+  fields.each do |myField|
     describe "#{myField}" do
       it { should be_in logging_fields}
     end
-  end
+   
+end
+
+
 end
 

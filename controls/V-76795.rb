@@ -35,9 +35,9 @@ Click the \"Logging\" icon.
 
 Click \"Browse\" and navigate to the directory where the log files are stored.
 
-Right-click the log file name to review and click “Properties”.
+Right-click the log file name to review and click Properties.
 
-Click the “Security” tab; verify only authorized groups are listed, if others
+Click the Security tab; verify only authorized groups are listed, if others
 are listed, this is a finding.
 
 Note: The log file should be restricted as follows:
@@ -57,10 +57,18 @@ Click the \"Logging\" icon.
 
 Click \"Browse\" and navigate to the directory where the log files are stored.
 
-Right-click the log file name to review and click “Properties”.
+Right-click the log file name to review and click Properties.
 
-Click the “Security” tab.
+Click the Security tab.
 
 Set the log file permissions for the appropriate group."
+  #obtain the log directory
+  log_directory = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand directory").stdout.strip
+  
+  dir = log_directory.gsub(/%SystemDrive%/, "C:")
+  
+  describe command("Get-Acl -Path '#{dir}' | Format-List | Findstr 'All' | Findstr /v 2") do
+    its('stdout')  { should eq "Access : NT SERVICE\\TrustedInstaller Allow  FullControl\r\n         NT AUTHORITY\\SYSTEM Allow  FullControl\r\n         BUILTIN\\Administrators Allow  FullControl\r\n"}
+  end
 end
 

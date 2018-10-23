@@ -53,7 +53,10 @@ Open the IIS 8.5 Manager.
 Double-click the \"SSL Settings\" icon.
 
 Verify the \"Clients Certificate Required\" check box is selected.
-
+ 
 Select \"Apply\" from the \"Actions\" pane."
+ describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+    it {should include 'SslRequireCert'}
+  end
 end
 

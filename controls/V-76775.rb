@@ -82,5 +82,5 @@ Select \"Apply\" from the \"Actions\" pane."
  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip do
     it {should cmp "InProc"}
   end
-end
+end 
 

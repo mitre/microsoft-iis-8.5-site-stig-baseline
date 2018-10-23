@@ -48,5 +48,8 @@ Double-click \".NET Compilation\".
 
 Scroll down to the \"Behavior\" section and set the value for \"Debug\" to
 \"False\"."
+  describe command('Get-WebConfigurationProperty -Filter system.web/compilation -name * | select -expand debug').stdout.strip do
+    it {should cmp 'True' }
+  end
 end
-
+  
