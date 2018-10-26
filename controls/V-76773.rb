@@ -1,12 +1,12 @@
 control "V-76773" do
   title "The IIS 8.5 websites MaxConnections setting must be configured to
-limit the number of allowed simultaneous session requests."
+  limit the number of allowed simultaneous session requests."
   desc  "Resource exhaustion can occur when an unlimited number of concurrent
-requests are allowed on a website, facilitating a Denial of Service attack.
-Mitigating this kind of attack will include limiting the number of concurrent
-HTTP/HTTPS requests per IP address and may include, where feasible, limiting
-parameter values associated with keepalive (i.e., a parameter used to limit the
-amount of time a connection may be inactive)."
+  requests are allowed on a website, facilitating a Denial of Service attack.
+  Mitigating this kind of attack will include limiting the number of concurrent
+  HTTP/HTTPS requests per IP address and may include, where feasible, limiting
+  parameter values associated with keepalive (i.e., a parameter used to limit the
+  amount of time a connection may be inactive)."
   impact 0.7
   tag "gtitle": "SRG-APP-000001-WSR-000001"
   tag "gid": "V-76773"
@@ -27,35 +27,35 @@ amount of time a connection may be inactive)."
   tag "ia_controls": nil
   tag "check": "Access the IIS 8.5 IIS Manager.
 
-Click the IIS 8.5 server.
+  Click the IIS 8.5 server.
 
-Select \"Configuration Editor\" under the \"Management\" section.
+  Select \"Configuration Editor\" under the \"Management\" section.
 
-From the \"Section:\" drop-down list at the top of the configuration editor,
-locate \"system.applicationHost/sites\".
+  From the \"Section:\" drop-down list at the top of the configuration editor,
+  locate \"system.applicationHost/sites\".
 
-Expand \"siteDefaults\".
-Expand \"limits\".
+  Expand \"siteDefaults\".
+  Expand \"limits\".
 
-Review the results and verify the value is greater than zero for the
-\"maxconnections\" parameter.
+  Review the results and verify the value is greater than zero for the
+  \"maxconnections\" parameter.
 
-If the maxconnections parameter is set to zero, this is a finding."
+  If the maxconnections parameter is set to zero, this is a finding."
   tag "fix": "Access the IIS 8.5 IIS Manager.
 
-Click the IIS 8.5 server.
+  Click the IIS 8.5 server.
 
-Select \"Configuration Editor\" under the \"Management\" section.
+  Select \"Configuration Editor\" under the \"Management\" section.
 
-From the \"Section:\" drop-down list at the top of the configuration editor,
-locate \"system.applicationHost/sites\".
+  From the \"Section:\" drop-down list at the top of the configuration editor,
+  locate \"system.applicationHost/sites\".
 
-Expand \"siteDefaults\".
-Expand \"limits\".
+  Expand \"siteDefaults\".
+  Expand \"limits\".
 
-Set the \"maxconnections\" parameter to a value greater than zero."
-describe command('Get-WebConfigurationProperty -Filter system.applicationHost/sites -name * | select -expand siteDefaults | select -expand limits | select -expand MaxConnections').stdout.strip do
-  it {should cmp > 0 }
-end
+  Set the \"maxconnections\" parameter to a value greater than zero."
+  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/sites -name * | select -expand siteDefaults | select -expand limits | select -expand MaxConnections') do
+    its('stdout') {should cmp > 0 }
+  end
 end
 

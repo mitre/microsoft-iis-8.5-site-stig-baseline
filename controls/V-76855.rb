@@ -1,11 +1,11 @@
 control "V-76855" do
   title "IIS 8.5 website session IDs must be sent to the client using TLS."
   desc  "The HTTP protocol is a stateless protocol. To maintain a session, a
-session identifier is used. The session identifier is a piece of data that is
-used to identify a session and a user. If the session identifier is compromised
-by an attacker, the session can be hijacked. By encrypting the session
-identifier, the identifier becomes more difficult for an attacker to hijack,
-decrypt, and use before the session has expired."
+  session identifier is used. The session identifier is a piece of data that is
+  used to identify a session and a user. If the session identifier is compromised
+  by an attacker, the session can be hijacked. By encrypting the session
+  identifier, the identifier becomes more difficult for an attacker to hijack,
+  decrypt, and use before the session has expired."
   impact 0.7
   tag "gtitle": "SRG-APP-000439-WSR-000152"
   tag "gid": "V-76855"
@@ -25,39 +25,38 @@ decrypt, and use before the session has expired."
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Access the IIS 8.5 Manager.
+  Access the IIS 8.5 Manager.
 
-Select the website being reviewed.
+  Select the website being reviewed.
 
-Under \"Management\" section, double-click the \"Configuration Editor\" icon.
+  Under \"Management\" section, double-click the \"Configuration Editor\" icon.
 
-From the \"Section:\" drop-down list, select “system.webServer/asp\".
+  From the \"Section:\" drop-down list, select “system.webServer/asp\".
 
-Expand the \"session\" section.
+  Expand the \"session\" section.
 
-Verify the \"keepSessionIdSecure\" is set to \"True\".
+  Verify the \"keepSessionIdSecure\" is set to \"True\".
 
-If the \"keepSessionIdSecure\" is not set to \"True\", this is a finding."
+  If the \"keepSessionIdSecure\" is not set to \"True\", this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Access the IIS 8.5 Manager.
+  Access the IIS 8.5 Manager.
 
-Select the website being reviewed.
+  Select the website being reviewed.
 
-Under \"Management\" section, double-click the \"Configuration Editor\" icon.
+  Under \"Management\" section, double-click the \"Configuration Editor\" icon.
 
-From the \"Section:\" drop-down list, select “system.webServer/asp\".
+  From the \"Section:\" drop-down list, select “system.webServer/asp\".
 
-Expand the \"session\" section.
+  Expand the \"session\" section.
 
-Select \"True\" for the \"keepSessionIdSecure\" setting.
+  Select \"True\" for the \"keepSessionIdSecure\" setting.
 
-Select \"Apply\" from the \"Actions\" pane."
- describe command('Get-WebConfigurationProperty -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip do
+  Select \"Apply\" from the \"Actions\" pane."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip do
     it {should cmp 'True'}
   end
 end
-

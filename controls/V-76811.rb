@@ -1,13 +1,13 @@
 control "V-76811" do
   title "Anonymous IIS 8.5 website access accounts must be restricted."
   desc  "Many of the security problems that occur are not the result of a user
-gaining access to files or data for which the user does not have permissions,
-but rather users are assigned incorrect permissions to unauthorized data. The
-files, directories, and data that are stored on the web server need to be
-evaluated and a determination made concerning authorized access to information
-and programs on the server. Only authorized users and administrative accounts
-will be allowed on the host server in order to maintain the web server,
-applications, and review the server operations."
+  gaining access to files or data for which the user does not have permissions,
+  but rather users are assigned incorrect permissions to unauthorized data. The
+  files, directories, and data that are stored on the web server need to be
+  evaluated and a determination made concerning authorized access to information
+  and programs on the server. Only authorized users and administrative accounts
+  will be allowed on the host server in order to maintain the web server,
+  applications, and review the server operations."
   impact 0.7
   tag "gtitle": "SRG-APP-000211-WSR-000031"
   tag "gid": "V-76811"
@@ -28,49 +28,98 @@ applications, and review the server operations."
   tag "ia_controls": nil
   tag "check": "Check the account used for anonymous access to the website.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Double-click \"Authentication\" in the IIS section of the website’s Home Pane.
+  Double-click \"Authentication\" in the IIS section of the websites Home Pane.
 
-If Anonymous access is disabled, this is Not a Finding.
+  If Anonymous access is disabled, this is Not a Finding.
 
-If enabled, click “Anonymous Authentication” and then click “Edit” in the
-\"Actions\" pane.
+  If enabled, click Anonymous Authentication and then click Edit in the
+  \"Actions\" pane.
 
-If the “Specific user” radio button is enabled and an ID is specified in the
-adjacent control box, this is the ID being used for anonymous access.
+  If the Specific user radio button is enabled and an ID is specified in the
+  adjacent control box, this is the ID being used for anonymous access.
 
-Check privileged groups that may allow the anonymous account inappropriate
-membership.
+  Check privileged groups that may allow the anonymous account inappropriate
+  membership.
 
-Click “Start” and then double-click “Server Manager”.
+  Click Start and then double-click Server Manager.
 
-Expand Configuration; expand Local Users and Groups; and then click “Groups”.
+  Expand Configuration; expand Local Users and Groups; and then click Groups.
 
-Review group members.
+  Review group members.
 
-Privileged Groups:
-Administrators
-Backup Operators
-Certificate Services (of any designation)
-Distributed COM Users
-Event Log Readers
-Network Configuration Operators
-Performance Log Users
-Performance Monitor Users
-Power Users
-Print Operators
-Remote Desktop Users
-Replicator
-Users
+  Privileged Groups:
+  Administrators
+  Backup Operators
+  Certificate Services (of any designation)
+  Distributed COM Users
+  Event Log Readers
+  Network Configuration Operators
+  Performance Log Users
+  Performance Monitor Users
+  Power Users
+  Print Operators
+  Remote Desktop Users
+  Replicator
+  Users
 
-Double-click each group and review its members.
+  Double-click each group and review its members.
 
-If the IUSR account or any account used for anonymous access is a member of any
-group with privileged access, this is a finding."
+  If the IUSR account or any account used for anonymous access is a member of any
+  group with privileged access, this is a finding."
   tag "fix": "Remove the Anonymous access account from all privileged accounts
-and all privileged groups."
-end
+  and all privileged groups."
 
+  is_anonymous_access_enabled = command("Get-WebConfigurationProperty -Filter system.webServer/security/authentication/anonymousAuthentication -name * | select -expand Enabled").stdout.strip
+
+  if is_anonymous_access_enabled == 'True'
+  get_anonymous_authentication_account = command("Get-WebConfigurationProperty -Filter system.webServer/security/authentication/anonymousAuthentication -name * | select -expand userName").stdout.strip
+
+  describe command("net localgroup Administrators | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Backup Operators' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Certificate Service DCOM Access' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Distributed COM Users' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Event Log Readers' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Network Configuration Operators' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Performance Log Users' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Performance Monitor Users' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Power Users' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Print Operators' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Remote Desktop Users' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Replicator' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  describe command("net localgroup 'Users' | Findstr #{get_anonymous_authentication_account}") do
+    its('stdout') { should eq '' }
+  end
+  else
+    describe command("Get-WebConfigurationProperty -Filter system.webServer/security/authentication/anonymousAuthentication -name * | select -expand Enabled") do
+      its('stdout') { should eq "False\r\n" }
+    end
+  end
+end

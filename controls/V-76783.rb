@@ -6,27 +6,25 @@ LOG_FIELDS = attribute(
 
 control "V-76783" do
   title "The enhanced logging for each IIS 8.5 website must be enabled and
-capture, record, and log all content related to a user session."
+  capture, record, and log all content related to a user session."
   desc  "Log files are a critical component to the successful management of an
-IS used within the DoD. By generating log files with useful information web
-administrators can leverage them in the event of a disaster, malicious attack,
-or other site-specific needs.
+  IS used within the DoD. By generating log files with useful information web
+  administrators can leverage them in the event of a disaster, malicious attack,
+  or other site-specific needs.
 
-    Ascertaining the correct order of the events that occurred is important
-during forensic analysis. Events that appear harmless by themselves might be
-flagged as a potential threat when properly viewed in sequence. By also
-establishing the event date and time, an event can be properly viewed with an
-enterprise tool to fully see a possible threat in its entirety.
+      Ascertaining the correct order of the events that occurred is important
+  during forensic analysis. Events that appear harmless by themselves might be
+  flagged as a potential threat when properly viewed in sequence. By also
+  establishing the event date and time, an event can be properly viewed with an
+  enterprise tool to fully see a possible threat in its entirety.
 
-    Without sufficient information establishing when the log event occurred,
-investigation into the cause of event is severely hindered. Log record content
-that may be necessary to satisfy the requirement of this control includes, but
-is not limited to, time stamps, source and destination IP addresses,
-user/process identifiers, event descriptions, application-specific events,
-success/fail indications, file names involved, access control, or flow control
-rules invoked.
-
-
+      Without sufficient information establishing when the log event occurred,
+  investigation into the cause of event is severely hindered. Log record content
+  that may be necessary to satisfy the requirement of this control includes, but
+  is not limited to, time stamps, source and destination IP addresses,
+  user/process identifiers, event descriptions, application-specific events,
+  success/fail indications, file names involved, access control, or flow control
+  rules invoked.
   "
   impact 0.7
   tag "gtitle": "SRG-APP-000092-WSR-000055"
@@ -48,55 +46,42 @@ rules invoked.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name.
+  Click the site name.
 
-Click the \"Logging\" icon.
+  Click the \"Logging\" icon.
 
-Under Format select \"W3C\".
+  Under Format select \"W3C\".
 
-Click Select Fields, verify at a minimum the following fields are checked:
-Date, Time, Client IP Address, User Name, Method, URI Query, Protocol Status,
-and Referrer.
+  Click Select Fields, verify at a minimum the following fields are checked:
+  Date, Time, Client IP Address, User Name, Method, URI Query, Protocol Status,
+  and Referrer.
 
-If the \"W3C\" is not selected as the logging format OR any of the required
-fields are not selected, this is a finding."
+  If the \"W3C\" is not selected as the logging format OR any of the required
+  fields are not selected, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager. 
+  Open the IIS 8.5 Manager. 
 
-Click the site name.
+  Click the site name.
 
-Click the \"Logging\" icon.
+  Click the \"Logging\" icon.
 
-Under Format select \"W3C\".
+  Under Format select \"W3C\".
 
-Select the following fields: Date, Time, Client IP Address, User Name, Method,
-URI Query, Protocol Status, and Referrer.
+  Select the following fields: Date, Time, Client IP Address, User Name, Method,
+  URI Query, Protocol Status, and Referrer.
 
-Select \"Apply\" from the \"Actions\" pane."
-is_file_logging_enabled_string = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand enabled").stdout.strip
+  Select \"Apply\" from the \"Actions\" pane."
+  is_file_logging_enabled_string = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand enabled").stdout.strip
   is_file_logging_enabled = (is_file_logging_enabled_string == 'False' || is_file_logging_enabled_string == '') ? false : true
 
   logging_fields = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand logExtFileFlags").stdout.strip.split(',')
   fields = LOG_FIELDS
-
-  puts logging_fields
-
-
-  describe windows_feature('Web-Server') do
-    it{ should be_installed }
-  end
-  describe windows_feature('Web-WebServer') do
-    it{ should be_installed }
-  end
-  describe windows_feature('Web-Common-Http') do
-    it{ should be_installed }
-  end
 
   describe "Is Web Server Central W3C Logging Configuration Enabled" do
     subject { is_file_logging_enabled }
@@ -108,8 +93,7 @@ is_file_logging_enabled_string = command("Get-WebConfiguration system.applicatio
       it { should be_in logging_fields}
     end
    
-end
-
+  end
 
 end
 

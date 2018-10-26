@@ -1,17 +1,17 @@
 control "V-76813" do
   title "The IIS 8.5 website must generate unique session identifiers that
-cannot be reliably reproduced."
+  cannot be reliably reproduced."
   desc  "Communication between a client and the web server is done using the
-HTTP protocol, but HTTP is a stateless protocol. In order to maintain a
-connection or session, a web server will generate a session identifier (ID) for
-each client session when the session is initiated. The session ID allows the
-web server to track a user session and, in many cases, the user, if the user
-previously logged into a hosted application.
+  HTTP protocol, but HTTP is a stateless protocol. In order to maintain a
+  connection or session, a web server will generate a session identifier (ID) for
+  each client session when the session is initiated. The session ID allows the
+  web server to track a user session and, in many cases, the user, if the user
+  previously logged into a hosted application.
 
-    By being able to guess session IDs, an attacker can easily perform a
-man-in-the-middle attack. To truly generate random session identifiers that
-cannot be reproduced, the web server session ID generator, when used twice with
-the same input criteria, must generate an unrelated random ID.
+      By being able to guess session IDs, an attacker can easily perform a
+  man-in-the-middle attack. To truly generate random session identifiers that
+  cannot be reproduced, the web server session ID generator, when used twice with
+  the same input criteria, must generate an unrelated random ID.
 
     The session ID generator also needs to be a FIPS 140-2-approved generator.
   "
@@ -34,43 +34,42 @@ the same input criteria, must generate an unrelated random ID.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name.
+  Click the site name.
 
-Under the \"ASP.NET\" section, select \"Session State\".
+  Under the \"ASP.NET\" section, select \"Session State\".
 
-Under \"Session State\" Mode Settings, verify the \"In Process\" mode is
-selected.
+  Under \"Session State\" Mode Settings, verify the \"In Process\" mode is
+  selected.
 
-If the \"In Process\" mode is selected, this is not a finding.
+  If the \"In Process\" mode is selected, this is not a finding.
 
-Alternative method:
+  Alternative method:
 
-Click the site name.
+  Click the site name.
 
-Select \"Configuration Editor\" under the \"Management\" section.
+  Select \"Configuration Editor\" under the \"Management\" section.
 
-From the \"Section:\" drop-down list at the top of the configuration editor,
-locate \"system.web/sessionState\".
+  From the \"Section:\" drop-down list at the top of the configuration editor,
+  locate \"system.web/sessionState\".
 
-Verify the \"mode\" reflects \"InProc\".
+  Verify the \"mode\" reflects \"InProc\".
 
-If the \"mode\" is not set to \"InProc\", this is a finding."
+  If the \"mode\" is not set to \"InProc\", this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name.
+  Click the site name.
 
-Under the ASP.NET section, select \"Session State\".
+  Under the ASP.NET section, select \"Session State\".
 
-Under \"Session State\" Mode Settings, select the \"In Process\" mode."
+  Under \"Session State\" Mode Settings, select the \"In Process\" mode."
   describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip do
     it {should cmp "InProc"}
   end
 end
-

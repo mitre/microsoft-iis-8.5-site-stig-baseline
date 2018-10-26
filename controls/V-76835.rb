@@ -1,11 +1,11 @@
 control "V-76835" do
   title "Warning and error messages displayed to clients must be modified to
-minimize the identity of the IIS 8.5 website, patches, loaded modules, and
-directory paths."
+  minimize the identity of the IIS 8.5 website, patches, loaded modules, and
+  directory paths."
   desc  "HTTP error pages contain information that could enable an attacker to
-gain access to an information system. Failure to prevent the sending of HTTP
-error pages with full information to remote requesters exposes internal
-configuration information to potential attackers."
+  gain access to an information system. Failure to prevent the sending of HTTP
+  error pages with full information to remote requesters exposes internal
+  configuration information to potential attackers."
   impact 0.7
   tag "gtitle": "SRG-APP-000266-WSR-000159"
   tag "gid": "V-76835"
@@ -25,33 +25,32 @@ configuration information to potential attackers."
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Double-click the \"Error Pages\" icon.
+  Double-click the \"Error Pages\" icon.
 
-Click each error message and click \"Edit Feature\" setting from the
-\"Actions\" pane.
+  Click each error message and click \"Edit Feature\" setting from the
+  \"Actions\" pane.
 
-If any error message is not set to “Detailed errors for local requests and
-custom error pages for remote requests”, this is a finding."
+  If any error message is not set to “Detailed errors for local requests and
+  custom error pages for remote requests”, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Double-click the \"Error Pages\" icon.
+  Double-click the \"Error Pages\" icon.
 
-Click each error message and click \"Edit Feature\" Setting from the
-\"Actions\" pane; set each error message to “Detailed errors for local requests
-and custom error pages for remote requests”."
+  Click each error message and click \"Edit Feature\" Setting from the
+  \"Actions\" pane; set each error message to “Detailed errors for local requests
+  and custom error pages for remote requests”."
   describe command("Get-WebConfigurationProperty -filter \"system.webServer/httpErrors\" -Name errorMode").stdout.strip do
     it {should cmp "DetailedLocalOnly"}
   end
 end
-

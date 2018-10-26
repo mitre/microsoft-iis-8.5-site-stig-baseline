@@ -1,15 +1,15 @@
 control "V-76781" do
   title "A public IIS 8.5 website must only accept Secure Socket Layer
-connections when authentication is required."
+  connections when authentication is required."
   desc  "Transport Layer Security (TLS) encryption is a required security
-setting for a private web server. Encryption of private information is
-essential to ensuring data confidentiality. If private information is not
-encrypted, it can be intercepted and easily read by an unauthorized party. A
-private web server must use a FIPS 140-2-approved TLS version, and all
-non-FIPS-approved SSL versions must be disabled.
+  setting for a private web server. Encryption of private information is
+  essential to ensuring data confidentiality. If private information is not
+  encrypted, it can be intercepted and easily read by an unauthorized party. A
+  private web server must use a FIPS 140-2-approved TLS version, and all
+  non-FIPS-approved SSL versions must be disabled.
 
-    FIPS 140-2-approved TLS versions include TLS V1.1 or greater. NIST SP
-800-52 specifies the preferred configurations for government systems.
+      FIPS 140-2-approved TLS versions include TLS V1.1 or greater. NIST SP
+  800-52 specifies the preferred configurations for government systems.
   "
   impact 0.7
   tag "gtitle": "SRG-APP-000014-WSR-000006"
@@ -30,34 +30,34 @@ non-FIPS-approved SSL versions must be disabled.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Note: If the server being reviewed is a private IIS 8.5 web
-server, this is Not Applicable.
+  server, this is Not Applicable.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name.
+  Click the site name.
 
-Double-click the \"SSL Settings\" icon.
+  Double-click the \"SSL Settings\" icon.
 
-Verify \"Require SSL\" check box is selected.
+  Verify \"Require SSL\" check box is selected.
 
-If the \"Require SSL\" check box is not selected, this is a finding."
+  If the \"Require SSL\" check box is not selected, this is a finding."
   tag "fix": "Note: If the server being reviewed is a private IIS 8.5 web
-server, this is Not Applicable.
+  server, this is Not Applicable.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name.
+  Click the site name.
 
-Double-click the \"SSL Settings\" icon.
+  Double-click the \"SSL Settings\" icon.
 
-Select \"Require SSL\" check box.
+  Select \"Require SSL\" check box.
 
-Select \"Apply\" from the \"Actions\" pane."
-describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+  Select \"Apply\" from the \"Actions\" pane."
+  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
     it {should include 'Ssl'}
   end
 end

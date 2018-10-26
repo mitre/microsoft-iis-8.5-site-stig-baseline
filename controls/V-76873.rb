@@ -1,8 +1,8 @@
 control "V-76873" do
   title "The application pool for each IIS 8.5 website must have a recycle time
-explicitly set."
+  explicitly set."
   desc  "Application pools can be periodically recycled to avoid unstable
-states possibly leading to application crashes, hangs, or memory leaks."
+  states possibly leading to application crashes, hangs, or memory leaks."
   impact 0.7
   tag "gtitle": "SRG-APP-000516-WSR-000174"
   tag "gid": "V-76873"
@@ -22,41 +22,41 @@ states possibly leading to application crashes, hangs, or memory leaks."
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Note: Recycling Application Pools can create an unstable
-environment in a 64-bit SharePoint environment. If operational issues arise,
-with supporting documentation from the ISSO this check can be downgraded to a
-Cat III.
+  environment in a 64-bit SharePoint environment. If operational issues arise,
+  with supporting documentation from the ISSO this check can be downgraded to a
+  Cat III.
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Perform for each Application Pool.
+  Perform for each Application Pool.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the Action
-Pane.
+  Highlight an Application Pool and click \"Advanced Settings\" in the Action
+  Pane.
 
-Scroll down to the \"Recycling\" section and expand the \"Generate Recycle
-Event Log Entry\" section.
+  Scroll down to the \"Recycling\" section and expand the \"Generate Recycle
+  Event Log Entry\" section.
 
-Verify both the \"Regular time interval\" and \"Specific time\" options are set
-to \"True\".
+  Verify both the \"Regular time interval\" and \"Specific time\" options are set
+  to \"True\".
 
-If both the \"Regular time interval\" and \"Specific time\" options are not set
-to \"True\", this is a finding."
+  If both the \"Regular time interval\" and \"Specific time\" options are not set
+  to \"True\", this is a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Perform for each Application Pool.
+  Perform for each Application Pool.
 
-Highlight an Application Pool and click \"Advanced Settings\" in the Action
-Pane.
+  Highlight an Application Pool and click \"Advanced Settings\" in the Action
+  Pane.
 
-Scroll down to the \"Recycling\" section and expand the \"Generate Recycle
-Event Log Entry\" section.
+  Scroll down to the \"Recycling\" section and expand the \"Generate Recycle
+  Event Log Entry\" section.
 
-Set both the \"Regular time interval\" and \"Specific time\" options to
-\"True\"."
+  Set both the \"Regular time interval\" and \"Specific time\" options to
+  \"True\"."
    describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip do
     it {should include 'Time'}
   end
@@ -64,4 +64,3 @@ Set both the \"Regular time interval\" and \"Specific time\" options to
     it {should include 'Schedule'}
   end
 end
-

@@ -1,16 +1,16 @@
 control "V-76815" do
   title "The IIS 8.5 website document directory must be in a separate partition
-from the IIS 8.5 websites system files."
+  from the IIS 8.5 websites system files."
   desc  "The web document (home) directory is accessed by multiple anonymous
-users when the web server is in production. By locating the web document (home)
-directory on the same partition as the web server system file the risk for
-unauthorized access to these protected files is increased. Additionally, having
-the web document (home) directory path on the same drive as the system folders
-also increases the potential for a drive space exhaustion attack."
+  users when the web server is in production. By locating the web document (home)
+  directory on the same partition as the web server system file the risk for
+  unauthorized access to these protected files is increased. Additionally, having
+  the web document (home) directory path on the same drive as the system folders
+  also increases the potential for a drive space exhaustion attack."
   impact 0.7
   tag "gtitle": "SRG-APP-000233-WSR-000146"
   tag "gid": "V-76815"
-  tag "rid": "SV-91511r1_rule"
+  tag "rid": "SV-91511r1_rule" 
   tag "stig_id": "IISW-SI-000224"
   tag "fix_id": "F-83511r1_fix"
   tag "cci": ["CCI-001084"]
@@ -26,26 +26,37 @@ also increases the potential for a drive space exhaustion attack."
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Click the \"Advanced Settings\" from the \"Actions\" pane.
+  Click the \"Advanced Settings\" from the \"Actions\" pane.
 
-Review the Physical Path.
+  Review the Physical Path.
 
-If the Path is on the same partition as the OS, this is a finding."
+  If the Path is on the same partition as the OS, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Click the “Advanced Settings” from the \"Actions\" pane.
+  Click the Advanced Settings from the \"Actions\" pane.
 
-Change the Physical Path to the new partition and directory location."
+  Change the Physical Path to the new partition and directory location."
+  get_physical_path = command("(Get-Website -Name 'Default Web Site').PhysicalPath").stdout.strip
+
+  get_system_drive = command("env | findstr SYSTEMDRIVE").stdout.strip
+
+  system_drive  = get_system_drive[12..-1]
+
+ 
+  path = get_physical_path.gsub(/%SystemDrive%/, "#{system_drive}")
+
+  describe path do
+    it { should_not match /"#{system_drive}"\\\w*/}
+  end
 end
-

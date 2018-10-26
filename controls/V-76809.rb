@@ -1,19 +1,17 @@
 control "V-76809" do
   title "A private websites authentication mechanism must use client
-certificates to transmit session identifier to assure integrity."
+  certificates to transmit session identifier to assure integrity."
   desc  "A DoD private website must utilize PKI as an authentication mechanism
-for web users. Information systems residing behind web servers requiring
-authorization based on individual identity must use the identity provided by
-certificate-based authentication to support access control decisions. Not using
-client certificates allows an attacker unauthenticated access to private
-websites.
-
-
+  for web users. Information systems residing behind web servers requiring
+  authorization based on individual identity must use the identity provided by
+  certificate-based authentication to support access control decisions. Not using
+  client certificates allows an attacker unauthenticated access to private
+  websites.
   "
   impact 0.7
   tag "gtitle": "SRG-APP-000172-WSR-000104"
   tag "satisfies": ["SRG-APP-000172-WSR-000104", "SRG-APP-000224-WSR-000135",
-"SRG-APP-000427-WSR-000186"]
+  "SRG-APP-000427-WSR-000186"]
   tag "gid": "V-76809"
   tag "rid": "SV-91505r1_rule"
   tag "stig_id": "IISW-SI-000220"
@@ -31,32 +29,31 @@ websites.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Note: If the server being reviewed is a public IIS 8.5 web
-server, this is Not Applicable.
+  server, this is Not Applicable.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Double-click the \"SSL Settings\" icon.
+  Double-click the \"SSL Settings\" icon.
 
-Verify the \"Clients Certificate Required\" check box is selected.
+  Verify the \"Clients Certificate Required\" check box is selected.
 
-If the \"Clients Certificate Required\" check box is not selected, this is a
-finding."
+  If the \"Clients Certificate Required\" check box is not selected, this is a
+  finding."
   tag "fix": "Note: If the server being reviewed is a public IIS 8.5 web
-server, this is Not Applicable
+  server, this is Not Applicable
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Double-click the \"SSL Settings\" icon.
+  Double-click the \"SSL Settings\" icon.
 
-Verify the \"Clients Certificate Required\" check box is selected.
- 
-Select \"Apply\" from the \"Actions\" pane."
+  Verify the \"Clients Certificate Required\" check box is selected.
+   
+  Select \"Apply\" from the \"Actions\" pane."
  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
     it {should include 'SslRequireCert'}
   end
 end
-

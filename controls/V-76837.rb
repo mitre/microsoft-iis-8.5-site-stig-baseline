@@ -1,9 +1,9 @@
 control "V-76837" do
   title "Debugging and trace information used to diagnose the IIS 8.5 website
-must be disabled."
+  must be disabled."
   desc  "Setting compilation debug to false ensures detailed error information
-does not inadvertently display during live application usage, mitigating the
-risk of application information being displayed to users."
+  does not inadvertently display during live application usage, mitigating the
+  risk of application information being displayed to users."
   impact 0.7
   tag "gtitle": "SRG-APP-000266-WSR-000160"
   tag "gid": "V-76837"
@@ -23,33 +23,32 @@ risk of application information being displayed to users."
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Note: If the \".NET feature\" is not installed, this check is
-Not Applicable.
+  Not Applicable.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Double-click \".NET Compilation\".
+  Double-click \".NET Compilation\".
 
-Scroll down to the \"Behavior\" section and verify the value for \"Debug\" is
-set to \"False\".
+  Scroll down to the \"Behavior\" section and verify the value for \"Debug\" is
+  set to \"False\".
 
-If the \"Debug\" value is not set to \"False\", this is a finding."
+  If the \"Debug\" value is not set to \"False\", this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Double-click \".NET Compilation\".
+  Double-click \".NET Compilation\".
 
-Scroll down to the \"Behavior\" section and set the value for \"Debug\" to
-\"False\"."
+  Scroll down to the \"Behavior\" section and set the value for \"Debug\" to
+  \"False\"."
   describe command('Get-WebConfigurationProperty -Filter system.web/compilation -name * | select -expand debug').stdout.strip do
     it {should cmp 'True' }
   end
 end
-  

@@ -1,12 +1,12 @@
 control "V-76879" do
   title "The application pools rapid fail protection for each IIS 8.5 website
-must be enabled."
+  must be enabled."
   desc  "Rapid fail protection is a feature that interrogates the health of
-worker processes associated with websites and web applications. It can be
-configured to perform a number of actions such as shutting down and restarting
-worker processes that have reached failure thresholds. By not setting rapid
-fail protection the web server could become unstable in the event of a worker
-process crash potentially leaving the web server unusable."
+  worker processes associated with websites and web applications. It can be
+  configured to perform a number of actions such as shutting down and restarting
+  worker processes that have reached failure thresholds. By not setting rapid
+  fail protection the web server could become unstable in the event of a worker
+  process crash potentially leaving the web server unusable."
   impact 0.7
   tag "gtitle": "SRG-APP-000516-WSR-000174"
   tag "gid": "V-76879"
@@ -27,33 +27,32 @@ process crash potentially leaving the web server unusable."
   tag "ia_controls": nil
   tag "check": "Open the IIS 8.5 Manager.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Perform for each Application Pool.
+  Perform for each Application Pool.
 
-Highlight an Application Pool to review and click \"Advanced Settings\" in the
-\"Actions\" pane.
+  Highlight an Application Pool to review and click \"Advanced Settings\" in the
+  \"Actions\" pane.
 
-Scroll down to the \"Rapid Fail Protection\" section and verify the value for
-\"Enabled\" is set to \"True\".
+  Scroll down to the \"Rapid Fail Protection\" section and verify the value for
+  \"Enabled\" is set to \"True\".
 
-If the \"Rapid Fail Protection:Enabled\" is not set to \"True\", this is a
-finding."
+  If the \"Rapid Fail Protection:Enabled\" is not set to \"True\", this is a
+  finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Perform for each Application Pool.
+  Perform for each Application Pool.
 
-Highlight an Application Pool to review and click \"Advanced Settings\" in the
-\"Actions\" pane.
+  Highlight an Application Pool to review and click \"Advanced Settings\" in the
+  \"Actions\" pane.
 
-Scroll down to the \"Rapid Fail Protection\" section and set the value for
-\"Enabled\" to \"True\".
+  Scroll down to the \"Rapid Fail Protection\" section and set the value for
+  \"Enabled\" to \"True\".
 
-Click OK."
+  Click OK."
    describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip do
     it {should cmp 'True'}
   end
 end
-

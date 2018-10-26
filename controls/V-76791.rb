@@ -6,21 +6,21 @@ LOG_FIELDS = attribute(
 
 control "V-76791" do
   title "The IIS 8.5 website must produce log records containing sufficient
-information to establish the identity of any user/subject or process associated
-with an event."
+  information to establish the identity of any user/subject or process associated
+  with an event."
   desc  "Web server logging capability is critical for accurate forensic
-analysis. Without sufficient and accurate information, a correct replay of the
-events cannot be determined.
+  analysis. Without sufficient and accurate information, a correct replay of the
+  events cannot be determined.
 
-    Determining user accounts, processes running on behalf of the user, and
-running process identifiers also enable a better understanding of the overall
-event. User tool identification is also helpful to determine if events are
-related to overall user access or specific client tools.
+      Determining user accounts, processes running on behalf of the user, and
+  running process identifiers also enable a better understanding of the overall
+  event. User tool identification is also helpful to determine if events are
+  related to overall user access or specific client tools.
 
-    Log record content that may be necessary to satisfy the requirement of this
-control includes: time stamps, source and destination addresses, user/process
-identifiers, event descriptions, success/fail indications, file names involved,
-and access control or flow control rules invoked.
+      Log record content that may be necessary to satisfy the requirement of this
+  control includes: time stamps, source and destination addresses, user/process
+  identifiers, event descriptions, success/fail indications, file names involved,
+  and access control or flow control rules invoked.
   "
   impact 0.7
   tag "gtitle": "SRG-APP-000100-WSR-000064"
@@ -41,70 +41,69 @@ and access control or flow control rules invoked.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Access the IIS 8.5 web server IIS 8.5 Manager.
+  Access the IIS 8.5 web server IIS 8.5 Manager.
 
-Under \"IIS\", double-click the \"Logging\" icon.
+  Under \"IIS\", double-click the \"Logging\" icon.
 
-Verify the \"Format:\" under \"Log File\" is configured to \"W3C\".
+  Verify the \"Format:\" under \"Log File\" is configured to \"W3C\".
 
-Select the \"Fields\" button.
+  Select the \"Fields\" button.
 
-Under \"Standard Fields\", verify \"User Agent\", \"User Name\" and
-\"Referrer\" are selected.
+  Under \"Standard Fields\", verify \"User Agent\", \"User Name\" and
+  \"Referrer\" are selected.
 
-Under \"Custom Fields\", verify the following fields have been configured:
+  Under \"Custom Fields\", verify the following fields have been configured:
 
-Server Variable >> HTTP_USER_AGENT
+  Server Variable >> HTTP_USER_AGENT
 
-Request Header >> User-Agent
+  Request Header >> User-Agent
 
-Request Header >> Authorization
+  Request Header >> Authorization
 
-Response Header >> Content-Type
+  Response Header >> Content-Type
 
-If any of the above fields are not selected, this is a finding."
+  If any of the above fields are not selected, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Access the IIS 8.5 web server IIS 8.5 Manager.
+  Access the IIS 8.5 web server IIS 8.5 Manager.
 
-Select the website being reviewed.
+  Select the website being reviewed.
 
-Under \"IIS\", double-click the \"Logging\" icon.
+  Under \"IIS\", double-click the \"Logging\" icon.
 
-Configure the \"Format:\" under \"Log File\" to \"W3C\".
+  Configure the \"Format:\" under \"Log File\" to \"W3C\".
 
-Select the \"Fields\" button.
+  Select the \"Fields\" button.
 
-Under \"Standard Fields\", select \"User Agent\", \"User Name\" and
-\"Referrer\".
+  Under \"Standard Fields\", select \"User Agent\", \"User Name\" and
+  \"Referrer\".
 
-Under \"Custom Fields\", select the following fields:
+  Under \"Custom Fields\", select the following fields:
 
-Server Variable >> HTTP_USER_AGENT
+  Server Variable >> HTTP_USER_AGENT
 
-Request Header >> User-Agent
+  Request Header >> User-Agent
 
-Request Header >> Authorization
+  Request Header >> Authorization
 
-Response Header >> Content-Type
+  Response Header >> Content-Type
 
-Click \"OK\".
+  Click \"OK\".
 
-Select \"Apply\" from the \"Actions\" pane."
+  Select \"Apply\" from the \"Actions\" pane."
 
-fields = LOG_FIELDS
+  fields = LOG_FIELDS
   logging_fields = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand logExtFileFlags").stdout.strip.split(',')
-
 
   fields.each do |myField|
     describe "#{myField}" do
       it { should be_in logging_fields}
     end
    
-end
+  end
   log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/siteDefaults/logFile" -name "logFormat"').stdout.strip
 
   describe "IIS Logging format" do
@@ -119,6 +118,4 @@ end
     it { should match /sourceName\s+:\s+Authorization\s+sourceType\s+:\s+RequestHeader/}
     it { should match /sourceName\s+:\s+Content-Type\s+sourceType\s+:\s+ServerVariable/}
   end
-
 end
-

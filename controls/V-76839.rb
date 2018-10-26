@@ -1,15 +1,15 @@
 control "V-76839" do
   title "The Idle Time-out monitor for each IIS 8.5 website must be enabled."
   desc  "The idle time-out attribute controls the amount of time a worker
-process will remain idle before it shuts down. A worker process is idle if it
-is not processing requests and no new requests are received.
+  process will remain idle before it shuts down. A worker process is idle if it
+  is not processing requests and no new requests are received.
 
-    The purpose of this attribute is to conserve system resources; the default
-value for idle time-out is 20 minutes.
+      The purpose of this attribute is to conserve system resources; the default
+  value for idle time-out is 20 minutes.
 
-    By default, the World Wide Web (WWW) service establishes an overlapped
-recycle, in which the worker process to be shut down is kept running until
-after a new worker process is started.
+      By default, the World Wide Web (WWW) service establishes an overlapped
+  recycle, in which the worker process to be shut down is kept running until
+  after a new worker process is started.
   "
   impact 0.7
   tag "gtitle": "SRG-APP-000295-WSR-000012"
@@ -30,34 +30,32 @@ after a new worker process is started.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Highlight an Application Pool to review and click \"Advanced Settings\" in the
-\"Actions\" pane.
+  Highlight an Application Pool to review and click \"Advanced Settings\" in the
+  \"Actions\" pane.
 
-Scroll down to the \"Process Model\" section and verify the value for \"Idle
-Time-out\" is set to \"20\".
+  Scroll down to the \"Process Model\" section and verify the value for \"Idle
+  Time-out\" is set to \"20\".
 
-If the \"Idle Time-out\" is not set to \"20\" or less, this is a finding."
+  If the \"Idle Time-out\" is not set to \"20\" or less, this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Highlight an Application Pool to review and click \"Advanced Settings\" in the
-\"Actions\" pane.
+  Highlight an Application Pool to review and click \"Advanced Settings\" in the
+  \"Actions\" pane.
 
-Scroll down to the \"Process Model\" section and set the value for \"Idle
-Time-out\" to \"20\" or less."
+  Scroll down to the \"Process Model\" section and set the value for \"Idle
+  Time-out\" to \"20\" or less."
   describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand idleTimeout | select -expand TotalMinutes').stdout.strip do
     it {should cmp <= 20}
   end
 end
-
-

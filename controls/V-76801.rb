@@ -1,3 +1,10 @@
+APPROVED_FILE_EXTENSIONS= attribute(
+  'approved_file_extensions',
+  description: 'List of approved file extensions',
+  default: [".txt                                                                                                               True"]
+  
+)
+
 control "V-76801" do
   title "The IIS 8.5 website must have resource mappings set to disable the
 serving of certain file types."
@@ -31,35 +38,41 @@ to a user and all other types must be disabled.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "For \"Handler Mappings\", the ISSO must document and approve
-all allowable file extensions the website allows (white list) and denies (black
-list) by the website. The white list and black list will be compared to the
-\"Handler Mappings\" in IIS 8.5. \"Handler Mappings\" at the site level take
-precedence over \"Handler Mappings\" at the server level.
+  all allowable file extensions the website allows (white list) and denies (black
+  list) by the website. The white list and black list will be compared to the
+  \"Handler Mappings\" in IIS 8.5. \"Handler Mappings\" at the site level take
+  precedence over \"Handler Mappings\" at the server level.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Double-click \"Request Filtering\".
+  Double-click \"Request Filtering\".
 
-If any file name extensions from the black list have \"Allowed\" set to
-\"True\", this is a finding."
+  If any file name extensions from the black list have \"Allowed\" set to
+  \"True\", this is a finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
-web server:
+  web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name under review.
+  Click the site name under review.
 
-Double-click \"Request Filtering\".
+  Double-click \"Request Filtering\".
 
-For any file name extensions from the black list which have \"Allowed\" set to
-\"True\", remove the file name extension.
+  For any file name extensions from the black list which have \"Allowed\" set to
+  \"True\", remove the file name extension.
 
-Select \"Deny File Name Extension\" from the \"Actions\" pane.
+  Select \"Deny File Name Extension\" from the \"Actions\" pane.
+   
+  Add each file name extension from the black list.
 
-Add each file name extension from the black list.
-
-Select \"Apply\" from the \"Actions\" pane."
+  Select \"Apply\" from the \"Actions\" pane."
+  get_request_filtering = command("Get-WebConfigurationProperty -filter /system.webserver/security/requestFiltering -name * | select -expand fileExtensions | select -expand Collection | select fileExtension, allowed | Findstr /v 'False --- fileExtension'").stdout.strip.split("\n")
+  get_request_filtering.each do |extension|
+  a = extension.strip
+  describe "#{a}" do
+      it { should be_in APPROVED_FILE_EXTENSIONS}
+    end 
+  end
 end
-

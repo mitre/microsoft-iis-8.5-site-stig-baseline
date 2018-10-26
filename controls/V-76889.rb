@@ -1,11 +1,11 @@
 control "V-76889" do
   title "Backup interactive scripts on the IIS 8.5 server must be removed."
   desc  "Copies of backup files will not execute on the server, but they can be
-read by the anonymous user if special precautions are not taken. Such backup
-copies contain the same sensitive information as the actual script being
-executed and, as such, are useful to malicious users. Techniques and systems
-exist today to search web servers for such files and are able to exploit the
-information contained in them."
+  read by the anonymous user if special precautions are not taken. Such backup
+  copies contain the same sensitive information as the actual script being
+  executed and, as such, are useful to malicious users. Techniques and systems
+  exist today to search web servers for such files and are able to exploit the
+  information contained in them."
   impact 0.7
   tag "gtitle": "SRG-APP-000141-WSR-000087"
   tag "gid": "V-76889"
@@ -17,7 +17,7 @@ information contained in them."
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
-  tag "mitigations": nil
+  tag "mitigations": nil 
   tag "severity_override_guidance": false
   tag "potential_impacts": nil
   tag "third_party_tools": nil
@@ -25,21 +25,23 @@ information contained in them."
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Determine whether scripts are used on the web server for the
-subject website. Common file extensions include, but are not limited to: .cgi,
-.pl, .vb, .class, .c, .php, .asp, and .aspx.
+  subject website. Common file extensions include, but are not limited to: .cgi,
+  .pl, .vb, .class, .c, .php, .asp, and .aspx.
 
-If the website does not utilize CGI, this finding is Not Applicable.
+  If the website does not utilize CGI, this finding is Not Applicable.
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Right-click the IIS 8.5 web site name and select “Explore”.
+  Right-click the IIS 8.5 web site name and select Explore.
 
-Search for the listed script extensions
+  Search for the listed script extensions
 
-Search for the following files: *.bak, *.old, *.temp, *.tmp, *.backup, or “copy
-of...”.
+  Search for the following files: *.bak, *.old, *.temp, *.tmp, *.backup, or copy
+  of....
 
-If files with these extensions are found, this is a finding."
+  If files with these extensions are found, this is a finding."
   tag "fix": "Remove the backup files from the production web server."
+  describe "Manual review of website is needed" do
+    skip "Backup interactive scripts on the IIS 8.5 server must be removed"
+  end
 end
-

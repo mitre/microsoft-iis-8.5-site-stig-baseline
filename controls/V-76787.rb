@@ -38,40 +38,31 @@ each event the client source of the event.
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Interview the System Administrator to review the configuration
-of the IIS 8.5 architecture and determine if inbound web traffic is passed
-through a proxy.
+  of the IIS 8.5 architecture and determine if inbound web traffic is passed
+  through a proxy.
 
-If the IIS 8.5 is receiving inbound web traffic through a proxy, the audit logs
-must be reviewed to determine if correct source information is being passed
-through by the proxy server.
+  If the IIS 8.5 is receiving inbound web traffic through a proxy, the audit logs
+  must be reviewed to determine if correct source information is being passed
+  through by the proxy server.
 
-Follow the procedures below for each site hosted on the IIS 8.5 web server:
+  Follow the procedures below for each site hosted on the IIS 8.5 web server:
 
-Open the IIS 8.5 Manager.
+  Open the IIS 8.5 Manager.
 
-Click the site name.
+  Click the site name.
 
-Click the \"Logging\" icon.
+  Click the \"Logging\" icon.
 
-Click on \"View log file\" button.
+  Click on \"View log file\" button.
 
-When log file is displaced, review source IP information in log entries and
-verify entries do not reflect the IP address of the proxy server.
+  When log file is displaced, review source IP information in log entries and
+  verify entries do not reflect the IP address of the proxy server.
 
-If the log entries in the log file(s) reflect the IP address of the proxy
-server as the source, this is a finding."
+  If the log entries in the log file(s) reflect the IP address of the proxy
+  server as the source, this is a finding."
   tag "fix": "Access the proxy server through which inbound web traffic is
-passed and configure settings to pass web traffic to the IIS 8.5 web server
-transparently."
-  describe windows_feature('Web-Server') do
-    it{ should be_installed }
-  end
-  describe windows_feature('Web-WebServer') do
-    it{ should be_installed }
-  end
-  describe windows_feature('Web-Common-Http') do
-    it{ should be_installed }
-  end
+  passed and configure settings to pass web traffic to the IIS 8.5 web server
+  transparently."
 
   describe "Manual review of IIS Logs is required " do
     skip "Ensure Client IP accurately identifies the client and not proxy server ( if used north of IIS )"

@@ -1,9 +1,9 @@
 control "V-76875" do
   title "The maximum queue length for HTTP.sys for each IIS 8.5 website must be
-explicitly configured."
+  explicitly configured."
   desc  "In order to determine the possible causes of client connection errors
-and to conserve system resources, it is important to both log errors and manage
-those settings controlling requests to the application pool."
+  and to conserve system resources, it is important to both log errors and manage
+  those settings controlling requests to the application pool."
   impact 0.7
   tag "gtitle": "SRG-APP-000516-WSR-000174"
   tag "gid": "V-76875"
@@ -24,30 +24,29 @@ those settings controlling requests to the application pool."
   tag "ia_controls": nil
   tag "check": "Open the IIS 8.5 Manager.
 
-Perform for each Application Pool.
+  Perform for each Application Pool.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Highlight an Application Pool to review and click \"Advanced Settings\" in the
-\"Actions\" pane.
+  Highlight an Application Pool to review and click \"Advanced Settings\" in the
+  \"Actions\" pane.
 
-Scroll down to the \"General\" section and verify the value for \"Queue
-Length\" is set to 1000.
+  Scroll down to the \"General\" section and verify the value for \"Queue
+  Length\" is set to 1000.
 
-If the \"Queue Length\" is set to \"1000\" or less, this is not a finding."
+  If the \"Queue Length\" is set to \"1000\" or less, this is not a finding."
   tag "fix": "Open the IIS 8.5 Manager.
 
-Click the Application Pools.
+  Click the Application Pools.
 
-Highlight an Application Pool to review and click \"Advanced Settings\" in the
-\"Actions\" pane.
+  Highlight an Application Pool to review and click \"Advanced Settings\" in the
+  \"Actions\" pane.
 
-Scroll down to the General section and set the value for Queue Length to
-1000 or less.
+  Scroll down to the General section and set the value for Queue Length to
+  1000 or less.
 
-Click OK."
+  Click OK."
   describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip do
     it {should cmp <= '1000'}
   end
 end
-
