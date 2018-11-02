@@ -96,6 +96,6 @@ control "V-76789" do
     subject { custom_field_configuration }
     it { should match /sourceName\s+:\s+Connection\s+sourceType\s+:\s+RequestHeader/}
     it { should match /sourceName\s+:\s+Warning\s+sourceType\s+:\s+RequestHeader/}
-    it { should match /sourceName\s+:\s+SERVER_NAME\s+sourceType\s+:\s+ServerVariable/}
+    it { should match /sourceName\s+:\s+HTTP_CONNECTION\s+sourceType\s+:\s+ServerVariable/}
   end
 end
