@@ -62,11 +62,18 @@ control "V-76831" do
   Click the \"Content View\" tab, click on each listed \"Default Document\" and
   click on \"Explore\" under the \"Actions\" pane. Create a valid document for
   the listed \"Default Document\"."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/defaultDocument -name * | select -expand enabled') do
-    its('stdout') {should eq "True\r\n"}
+
+  default_document_enabled = command('Get-WebConfigurationProperty -Filter system.webServer/defaultDocument -name * | select -expand enabled').stdout.strip
+  default_document_view = command("Get-WebConfigurationProperty -Filter system.webServer/defaultDocument/files/add -Name value | Select value | Findstr /v 'Value ---'").stdout
+  
+  describe "The websites default document enabled" do
+     subject { default_document_enabled }
+     it {should cmp 'True'}
   end
-  describe command("Get-WebConfigurationProperty -Filter system.webServer/defaultDocument/files/add -Name value | Select value | Findstr /v 'Value ---'") do
-   its('stdout') {should_not eq ''}
+
+  describe "The websites default document view" do
+     subject { default_document_view }
+     it { should_not eq '' }
   end
 end
  

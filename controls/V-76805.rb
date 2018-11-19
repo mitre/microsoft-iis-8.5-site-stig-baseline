@@ -62,7 +62,10 @@ control "V-76805" do
 
   Select \"Apply\" from the \"Actions\" pane.
   "
-  describe command('Get-WebConfigurationProperty -Filter system.web/trust -name * | select -expand level').stdout.strip do
+  trust_level = command('Get-WebConfigurationProperty -Filter system.web/trust -name * | select -expand level').stdout.strip
+
+  describe "The website  Global .NET Trust Level" do
+    subject { trust_level }
     it {should cmp 'Full' }
   end
 end

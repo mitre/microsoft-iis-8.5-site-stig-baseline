@@ -74,10 +74,18 @@ control "V-76845" do
   setting.
 
   Configure a schedule to rollover log files on a regular basis."
-  describe command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty directory').stdout.strip do
+
+  log_directory = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty directory').stdout.strip
+  log_period = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty period').stdout.strip
+
+  describe "The IIS log directory" do
+    subject { log_directory }
     it {should cmp "#{LOG_DIRECTORY}"}
   end
-  describe command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty period').stdout.strip do
+
+  describe "The websites log file rollover period" do
+    subject { log_period }
     it {should cmp "Daily"}
   end
+
 end

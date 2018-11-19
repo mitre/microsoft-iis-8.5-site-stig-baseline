@@ -50,7 +50,10 @@ control "V-76827" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Uncheck the \"Allow unlisted file extensions\" check box."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand fileExtensions | select - expand allowUnlisted').stdout.strip do
+  allowUnlisted = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand fileExtensions | select - expand allowUnlisted').stdout.strip
+
+  describe "The websites Allow unlisted file extension" do
+    subject { allowUnlisted }
     it {should cmp 'False'}
   end
 end

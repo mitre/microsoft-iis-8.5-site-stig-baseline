@@ -57,7 +57,10 @@ control "V-76781" do
   Select \"Require SSL\" check box.
 
   Select \"Apply\" from the \"Actions\" pane."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+  sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip
+ 
+  describe "The website ssl flags" do
+    subject { sslFlags }
     it {should include 'Ssl'}
   end
 end

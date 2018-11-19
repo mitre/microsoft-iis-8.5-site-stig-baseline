@@ -52,7 +52,11 @@ control "V-76879" do
   \"Enabled\" to \"True\".
 
   Click OK."
-   describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip do
+
+  rapidFailProtection = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip
+   
+  describe "The application pools rapid fail protection for each IIS 8.5 website enabled setting" do
+    subject { rapidFailProtection }
     it {should cmp 'True'}
   end
 end

@@ -54,7 +54,11 @@ control "V-76877" do
   Enabled\" to \"True\".
 
   Click OK."
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip do
+  pingingEnabled = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip
+
+  describe "The application pools pinging monitor for each IIS 8.5 website enabled setting" do
+    subject { pingingEnabled }
     it {should cmp 'True'}
   end
+
 end

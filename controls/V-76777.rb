@@ -85,7 +85,10 @@ control "V-76777" do
   drop-dowssn list.
 
   Select \"Apply\" from the \"Actions\" pane."
-  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand cookieless').stdout.strip do
+  cookie_setting = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand cookieless').stdout.strip
+  
+  describe "The website session state cookie settings" do
+    subject { cookie_setting }
     it {should cmp "UseCookies"}
   end
 end

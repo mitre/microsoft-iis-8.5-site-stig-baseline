@@ -48,7 +48,11 @@ control "V-76883" do
 
   Scroll until the system.webserver/serverRuntime is found, double-click the
   element, and add the appropriate value."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/serverRuntime -name * | select -expand alternateHostName').stdout.strip do
+
+  alternateHostName = command('Get-WebConfigurationProperty -Filter system.webServer/serverRuntime -name * | select -expand alternateHostName').stdout.strip
+
+  describe "The Content Location header on the IIS 8.5 website" do
+    subject { alternateHostName }
     it {should_not cmp ''}
   end
 end

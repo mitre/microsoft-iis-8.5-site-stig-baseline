@@ -53,7 +53,11 @@ control "V-76881" do
   \"Failure Interval\" to \"5\" or less.
 
   Click OK."
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtectionInterval | select -expand TotalMinutes').stdout.strip do
+
+  rapidFailProtection = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtectionInterval | select -expand TotalMinutes').stdout.strip
+
+  describe "The application pools rapid fail protection total minutes for each IIS website" do
+    subject { rapidFailProtection }
     it {should cmp <= 5}
   end
 end

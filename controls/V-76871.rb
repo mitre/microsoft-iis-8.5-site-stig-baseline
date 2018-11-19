@@ -56,7 +56,12 @@ control "V-76871" do
 
   Scroll down to the \"Recycling\" section and set the value for \"Private Memory
   Limit\" to a value other than \"0\"."
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand privateMemory').stdout.strip do
+  
+  private_memory = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand privateMemory').stdout.strip
+
+  describe "The amount of private memory an application pool uses for each IIS 8.5
+  website" do
+    subject { private_memory }
     it {should_not cmp 0 }
   end
 end

@@ -54,8 +54,13 @@ control "V-76773" do
   Expand \"limits\".
 
   Set the \"maxconnections\" parameter to a value greater than zero."
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/sites -name * | select -expand siteDefaults | select -expand limits | select -expand MaxConnections') do
-    its('stdout') {should cmp > 0 }
+
+  site_maxconnections = command('Get-WebConfigurationProperty -Filter system.applicationHost/sites -name * | select -expand siteDefaults | select -expand limits | select -expand MaxConnections').stdout.strip
+
+  describe "The websites MaxConnections" do
+    subject { site_maxconnections }
+    it { should cmp > 0  }
   end
+  
 end
 

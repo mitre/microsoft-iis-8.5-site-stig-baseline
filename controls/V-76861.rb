@@ -85,10 +85,15 @@ control "V-76861" do
   Double-click the \"SSL Settings\" icon.
 
   Select \"Require SSL\" check box."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+  sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip
+ 
+  describe "The website ssl flags" do
+    subject { sslFlags }
     it {should include 'Ssl'}
   end
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+
+  describe "The website ssl flags" do
+    subject { sslFlags }
     it {should include 'Ssl128'}
   end
 end

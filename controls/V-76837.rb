@@ -48,7 +48,11 @@ control "V-76837" do
 
   Scroll down to the \"Behavior\" section and set the value for \"Debug\" to
   \"False\"."
-  describe command('Get-WebConfigurationProperty -Filter system.web/compilation -name * | select -expand debug').stdout.strip do
-    it {should cmp 'True' }
+
+  debug_enabled = command('Get-WebConfigurationProperty -Filter system.web/compilation -name * | select -expand debug').stdout.strip
+  
+  describe "The websites debugging enabled" do
+     subject { debug_enabled }
+     it {should cmp 'False' }
   end
 end

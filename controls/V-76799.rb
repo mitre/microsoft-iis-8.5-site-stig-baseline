@@ -65,8 +65,8 @@ control "V-76799" do
   get_web_handlers = command("Get-WebHandler | select Name, Path | Findstr /v ' -- name'").stdout.strip.split("\n")
 
   get_web_handlers.each do |handler|
-  a = handler.strip
-  describe "#{a}" do
+    a = handler.strip
+    describe "#{a}" do
       it { should be_in APPROVED_SCRIPT_FILE_EXTENSIONS}
     end 
   end

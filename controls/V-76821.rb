@@ -48,7 +48,10 @@ control "V-76821" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Set the \"Maximum Query String\" value to \"2048\" or less."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxQueryString').stdout.strip do
+  maxQueryString = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxQueryString').stdout.strip
+  
+  describe "The websites Maximum Query String limit" do
+    subject { maxQueryString }
     it {should cmp <= 2048}
   end
 end

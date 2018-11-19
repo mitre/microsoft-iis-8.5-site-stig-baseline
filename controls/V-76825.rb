@@ -47,7 +47,10 @@ control "V-76825" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Uncheck the \"Allow double escaping\" check box."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand allowDoubleEscaping').stdout.strip do
+  allowDoubleEscaping = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand allowDoubleEscaping').stdout.strip
+  
+  describe "The websites Allow double escaping" do
+    subject { allowDoubleEscaping }
     it {should cmp 'False'}
   end
 end

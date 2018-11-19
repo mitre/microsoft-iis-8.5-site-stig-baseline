@@ -57,7 +57,12 @@ control "V-76867" do
 
   Click OK.
   "
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip do
+  applicationPool_requests = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip
+
+  describe "The maximum number of requests an application pool can process for
+  each IIS 8.5 website" do
+    subject { applicationPool_requests }
     it {should cmp > 0 }
   end
+  
 end

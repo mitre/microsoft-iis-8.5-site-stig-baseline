@@ -53,7 +53,10 @@ control "V-76809" do
   Verify the \"Clients Certificate Required\" check box is selected.
    
   Select \"Apply\" from the \"Actions\" pane."
- describe command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip do
+  sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip
+ 
+  describe "The website ssl flags" do
+    subject { sslFlags }
     it {should include 'SslRequireCert'}
   end
 end

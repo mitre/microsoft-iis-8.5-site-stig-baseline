@@ -56,7 +56,10 @@ control "V-76855" do
   Select \"True\" for the \"keepSessionIdSecure\" setting.
 
   Select \"Apply\" from the \"Actions\" pane."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip do
+  keepSessionIdSecure = command('Get-WebConfigurationProperty -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip
+
+  describe "The website keepSessionIdSecure enabled setting" do
+    subject { keepSessionIdSecure }
     it {should cmp 'True'}
   end
 end

@@ -81,7 +81,11 @@ control "V-76859" do
   Set the \"compressionEnabled\" to \"False\".
 
   Select \"Apply\" from the \"Actions\" pane."
-  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand compressionEnabled').stdout.strip do
+ 
+  compressionEnabled = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand compressionEnabled').stdout.strip
+  
+  describe "The website compressionEnabled enabled setting" do
+    subject { compressionEnabled }
     it {should cmp 'False'}
   end
 end

@@ -78,15 +78,10 @@ control "V-76843" do
   IIS 8.5 Manager.
 
   In the \"Actions\" pane, under \"Manage Server\", click on \"Stop\"."
-  describe command("iisreset /stop").stdout.strip do
-    it {should include "Internet services successfully stopped"}
+ 
+  describe "The IIS 8.5 website must provide the capability to immediately
+  disconnect or disable remote access to the hosted applications" do
+    skip "This is a manual control"
   end
-
-  describe command("Get-IISSite \"#{IIS_SITE_NAME}\" | select -expandProperty state").stdout.strip do
-    it {should cmp "Stopped"}
-  end
-
-  describe command("iisreset /start").stdout.strip do
-    it {should include "Internet services successfully started"}
-  end
+  
 end

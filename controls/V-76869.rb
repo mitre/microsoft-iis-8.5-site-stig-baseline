@@ -63,7 +63,12 @@ control "V-76869" do
   \"0\".
 
   Click OK."
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand memory').stdout.strip do
+  virtual_memory = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand memory').stdout.strip
+
+  describe "The amount of virtual memory an application pool uses for each IIS 8.5
+  website" do
+    subject { virtual_memory }
     it {should_not cmp 0 }
   end
+
 end

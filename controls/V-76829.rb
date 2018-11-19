@@ -45,7 +45,11 @@ control "V-76829" do
   Double-click the \"Directory Browsing\" icon.
 
   Under the \"Actions\" pane click \"Disabled\"."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/directoryBrowse -name * | select -expand enabled').stdout.strip do
-    it {should cmp 'False'}
+
+  directory_browsing = command('Get-WebConfigurationProperty -Filter system.webServer/directoryBrowse -name * | select -expand enabled').stdout.strip
+
+   describe "The websites enable directory browsing" do
+     subject { directory_browsing }
+     it {should cmp 'False'}
   end
 end

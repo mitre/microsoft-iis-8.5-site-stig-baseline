@@ -79,8 +79,11 @@ control "V-76775" do
   selected.
 
   Select \"Apply\" from the \"Actions\" pane."
-  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip do
+
+  mode = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip
+
+  describe "The websites session state" do
+    subject { mode }
     it {should cmp "InProc"}
   end
 end 
-

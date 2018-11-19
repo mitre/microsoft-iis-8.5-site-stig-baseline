@@ -47,7 +47,11 @@ control "V-76823" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Uncheck the \"Allow high-bit characters\" check box."
-  describe command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand allowHighBitCharacters').stdout.strip do
+
+  allowHighBitCharacters = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand allowHighBitCharacters').stdout.strip
+
+  describe "The websites Allow high-bit characters" do
+    subject { allowHighBitCharacters }
     it {should cmp 'True'}
   end
 end

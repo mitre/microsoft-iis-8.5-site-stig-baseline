@@ -46,7 +46,11 @@ control "V-76875" do
   1000 or less.
 
   Click OK."
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip do
+
+  queueLength = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip
+
+  describe "The maximum queue length for HTTP.sys for each IIS 8.5 website" do
+    subject { queueLength }
     it {should cmp <= '1000'}
   end
 end

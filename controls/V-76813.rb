@@ -69,7 +69,10 @@ control "V-76813" do
   Under the ASP.NET section, select \"Session State\".
 
   Under \"Session State\" Mode Settings, select the \"In Process\" mode."
-  describe command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip do
+  mode = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip
+
+  describe "The websites session state" do
+    subject { mode }
     it {should cmp "InProc"}
   end
 end

@@ -57,10 +57,12 @@ control "V-76873" do
 
   Set both the \"Regular time interval\" and \"Specific time\" options to
   \"True\"."
-   describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip do
+
+  recycle_time = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip
+
+  describe "The application pool should set the recycle time" do
+    subject { recycle_time }
     it {should include 'Time'}
-  end
-  describe command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip do
     it {should include 'Schedule'}
   end
 end
