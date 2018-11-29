@@ -54,11 +54,21 @@ control "V-76877" do
   Enabled\" to \"True\".
 
   Click OK."
-  pingingEnabled = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_pingingEnabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip.split("\r\n")
 
-  describe "The application pools pinging monitor for each IIS 8.5 website enabled setting" do
-    subject { pingingEnabled }
-    it {should cmp 'True'}
+  get_pingingEnabled.zip(get_names).each do |pingingEnabled, names|
+    n = names.strip
+
+    describe "The application pools pinging monitor for for IIS site: #{n} enabled setting" do
+      subject { pingingEnabled }
+      it {should cmp 'True'}
+    end
   end
-
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
+  end
 end

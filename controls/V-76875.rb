@@ -46,11 +46,21 @@ control "V-76875" do
   1000 or less.
 
   Click OK."
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_queueLength = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip.split("\r\n")
 
-  queueLength = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip
+  get_queueLength.zip(get_names).each do |queueLength, names|
+    n = names.strip
 
-  describe "The maximum queue length for HTTP.sys for each IIS 8.5 website" do
-    subject { queueLength }
-    it {should cmp <= '1000'}
+    describe "The maximum queue length for HTTP.sys for IIS site: #{n}" do
+      subject { queueLength }
+      it {should cmp <= '1000'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

@@ -52,11 +52,21 @@ control "V-76879" do
   \"Enabled\" to \"True\".
 
   Click OK."
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_rapidFailProtection = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip.split("\r\n")
 
-  rapidFailProtection = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip
-   
-  describe "The application pools rapid fail protection for each IIS 8.5 website enabled setting" do
-    subject { rapidFailProtection }
-    it {should cmp 'True'}
+  get_rapidFailProtection.zip(get_names).each do |rapidFailProtection, names|
+    n = names.strip
+
+    describe "The application pools rapid fail protection for IIS site: #{n} enabled setting" do
+      subject { rapidFailProtection }
+      it {should cmp 'True'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

@@ -46,11 +46,20 @@ control "V-76817" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Set the \"maxURL\" value to \"4096\" or less."
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_maxurl = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxUrl').stdout.strip.split("\r\n")
 
-  maxurl = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxUrl').stdout.strip
-
-  describe "The websites maxUrl" do
-    subject { maxurl }
-    it {should cmp <= 4096 }
+  get_maxurl.zip(get_names).each do |maxurl, names|
+    n = names.strip
+    describe "IIS site: #{n} websites maxUrl" do
+      subject { maxurl }
+      it {should cmp <= 4096 }
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end 

@@ -48,10 +48,21 @@ control "V-76823" do
 
   Uncheck the \"Allow high-bit characters\" check box."
 
-  allowHighBitCharacters = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand allowHighBitCharacters').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_allowHighBitCharacters = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/security/requestFiltering -name * | select -expand allowHighBitCharacters').stdout.strip.split("\r\n")
 
-  describe "The websites Allow high-bit characters" do
-    subject { allowHighBitCharacters }
-    it {should cmp 'True'}
+  get_allowHighBitCharacters.zip(get_names).each do |allowHighBitCharacters, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites Allow high-bit characters" do
+      subject { allowHighBitCharacters }
+      it {should cmp 'True'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

@@ -51,11 +51,21 @@ control "V-76835" do
   \"Actions\" pane; set each error message to “Detailed errors for local requests
   and custom error pages for remote requests”."
 
-  errorMode = command("Get-WebConfigurationProperty -filter \"system.webServer/httpErrors\" -Name errorMode").stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_errorMode = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/httpErrors -Name errorMode').stdout.strip.split("\r\n")
 
-  describe "The websites error mode" do
-     subject { errorMode }
-     it {should cmp "DetailedLocalOnly"}
+  get_errorMode.zip(get_names).each do |errorMode, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites error mode" do
+      subject { errorMode }
+      it {should cmp "DetailedLocalOnly"}
+    end
   end
-
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
+  end
 end

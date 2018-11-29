@@ -83,5 +83,4 @@ control "V-76843" do
   disconnect or disable remote access to the hosted applications" do
     skip "This is a manual control"
   end
-  
 end

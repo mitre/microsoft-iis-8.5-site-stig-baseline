@@ -47,10 +47,22 @@ control "V-76825" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Uncheck the \"Allow double escaping\" check box."
-  allowDoubleEscaping = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand allowDoubleEscaping').stdout.strip
   
-  describe "The websites Allow double escaping" do
-    subject { allowDoubleEscaping }
-    it {should cmp 'False'}
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_allowDoubleEscaping = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/security/requestFiltering -name * | select -expand allowDoubleEscaping').stdout.strip.split("\r\n")
+
+  get_allowDoubleEscaping.zip(get_names).each do |allowDoubleEscaping, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites Allow double escaping" do
+      subject { allowDoubleEscaping }
+      it {should cmp 'False'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

@@ -63,19 +63,37 @@ control "V-76831" do
   click on \"Explore\" under the \"Actions\" pane. Create a valid document for
   the listed \"Default Document\"."
 
-  default_document_enabled = command('Get-WebConfigurationProperty -Filter system.webServer/defaultDocument -name * | select -expand enabled').stdout.strip
-  default_document_view = command("Get-WebConfigurationProperty -Filter system.webServer/defaultDocument/files/add -Name value | Select value | Findstr /v 'Value ---'").stdout
   
-  describe "The websites default document enabled" do
-     subject { default_document_enabled }
-     it {should cmp 'True'}
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.split("\r\n")
+
+  get_default_document_enabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/defaultDocument -name * | select -expand enabled').stdout.split("\r\n")
+  
+
+  get_default_document_enabled.zip(get_names).each do |default_document_enabled, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites default document enabled" do
+      subject { default_document_enabled }
+      it {should cmp 'True'}
+    end
   end
 
-  describe "The websites default document view" do
-     subject { default_document_view }
-     it { should_not eq '' }
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.split("\r\n")
+
+  get_names.each do |names|
+    n = names.strip
+    get_default_document_view = command("Get-WebConfigurationProperty  -pspath \"IIS:\Sites\\#{n}\" -Filter system.webServer/defaultDocument/files/add -Name value | Select value | Findstr /v 'Value ---'").stdout.strip.split("\r\n")
+    get_default_document_view.each do | default_document_view|
+      describe "The IIS site: #{n} websites default document view #{default_document_view}" do
+        subject { default_document_view }
+        it { should_not eq '' }
+      end
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end
- 
-
-

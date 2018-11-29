@@ -58,11 +58,24 @@ control "V-76873" do
   Set both the \"Regular time interval\" and \"Specific time\" options to
   \"True\"."
 
-  recycle_time = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_names.each do |names|
+      n = names.strip
 
-  describe "The application pool should set the recycle time" do
-    subject { recycle_time }
-    it {should include 'Time'}
-    it {should include 'Schedule'}
+    get_recycle_time = command("Get-WebConfigurationProperty -pspath \"IIS:\Sites\\#{n}\" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle").stdout.strip.split("\r\n")
+    get_recycle_time.each do |recycle_time|
+  
+      describe "The application pool should set the recycle time for IIS site: #{n}" do
+        subject { recycle_time }
+        it {should include 'Time'}
+        it {should include 'Schedule'}
+      end
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

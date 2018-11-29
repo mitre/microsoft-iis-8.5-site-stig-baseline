@@ -50,10 +50,22 @@ control "V-76827" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Uncheck the \"Allow unlisted file extensions\" check box."
-  allowUnlisted = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand fileExtensions | select - expand allowUnlisted').stdout.strip
 
-  describe "The websites Allow unlisted file extension" do
-    subject { allowUnlisted }
-    it {should cmp 'False'}
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_allowUnlisted = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/security/requestFiltering -name * | select -expand allowUnlisted').stdout.strip.split("\r\n")
+
+  get_allowUnlisted.zip(get_names).each do |allowUnlisted, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites Allow unlisted file extension" do
+      subject { allowUnlisted }
+      it {should cmp 'False'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

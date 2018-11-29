@@ -48,10 +48,21 @@ control "V-76821" do
   Click Edit Feature Settings in the \"Actions\" pane.
 
   Set the \"Maximum Query String\" value to \"2048\" or less."
-  maxQueryString = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxQueryString').stdout.strip
-  
-  describe "The websites Maximum Query String limit" do
-    subject { maxQueryString }
-    it {should cmp <= 2048}
+
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_maxQueryString = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxQueryString').stdout.strip.split("\r\n")
+
+  get_maxQueryString.zip(get_names).each do |maxQueryString, names|
+    n = names.strip
+    describe "The IIS site: #{n} websites Maximum Query String limit" do
+      subject { maxQueryString }
+      it {should cmp <= 2048 }
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

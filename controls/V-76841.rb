@@ -68,10 +68,21 @@ control "V-76841" do
 
   In the \"Actions\" pane, click \"Apply\".
   "
-  connectionTimeout = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand timeout | select -expand TotalMinutes').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_connectionTimeout = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.web/sessionState -name * | select -expand timeout | select -expand TotalMinutes').stdout.strip.split("\r\n")
 
-  describe "The websites connection timeout" do
-     subject { connectionTimeout }
-     it {should cmp <= 20}
+  get_connectionTimeout.zip(get_names).each do |connectionTimeout, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites connection timeout" do
+      subject { connectionTimeout }
+      it {should cmp <= 20}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

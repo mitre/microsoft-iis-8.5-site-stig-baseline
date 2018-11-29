@@ -80,10 +80,20 @@ control "V-76775" do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  mode = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand mode').stdout.strip
 
-  describe "The websites session state" do
-    subject { mode }
-    it {should cmp "InProc"}
+  get_mode = command('Get-WebConfigurationProperty -Filter system.web/sessionState -pspath "IIS:\Sites\*" -name * | select -expand mode').stdout.strip.split("\r\n")
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  
+  get_mode.zip(get_names).each do |mode, names|
+    describe "The iss site: #{names} website session state" do
+      subject { mode}
+      it {should eq "InProc"}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end 

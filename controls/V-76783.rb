@@ -77,23 +77,30 @@ control "V-76783" do
   URI Query, Protocol Status, and Referrer.
 
   Select \"Apply\" from the \"Actions\" pane."
-  is_file_logging_enabled_string = command("Get-WebConfiguration system.applicationHost/log/centralW3CLogFile | select -expand enabled").stdout.strip
-  is_file_logging_enabled = (is_file_logging_enabled_string == 'False' || is_file_logging_enabled_string == '') ? false : true
+  is_file_logging_enabled_string = command('Get-WebConfiguration system.applicationHost/log/centralW3CLogFile -pspath "IIS:\Sites\*" | select -expand enabled').stdout.strip.split("\r\n")
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
-  logging_fields = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand logExtFileFlags").stdout.strip.split(',')
-  fields = LOG_FIELDS
-
-  describe "Is Web Server Central W3C Logging Configuration Enabled" do
-    subject { is_file_logging_enabled }
-    it { should be true }
-  end
- 
-  fields.each do |myField|
-    describe "#{myField}" do
-      it { should be_in logging_fields}
+  fields = command('Get-WebConfigurationProperty -filter "system.applicationHost/sites/*/logFile" -name * | select -expand logExtFileFlags').stdout.strip.split("\r\n")
+  field = LOG_FIELDS
+  is_file_logging_enabled_string.zip(get_names).each do |is_file_logging_enabled, names|
+    describe "The iss site: #{names} Central W3C Logging Configuration Enabled" do
+      subject { is_file_logging_enabled }
+      it {should cmp "True"}
     end
-   
   end
 
+  fields.each do |f|
+    field.zip(get_names).each do |myField, names|
+      describe "The iis site #{names} logging field #{myField}" do
+        subject {myField}
+        it { should be_in f}
+      end
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
+  end
 end
-

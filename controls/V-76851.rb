@@ -95,15 +95,24 @@ control "V-76851" do
 
   Click \"Apply\" in the \"Actions\" pane."
 
-  sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -name * | select -expand sslFlags').stdout.strip
- 
-  describe "The website ssl flags" do
-    subject { sslFlags }
-    it {should include 'Ssl'}
-  end
+  get_sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -pspath "IIS:\Sites\*" -name * | select -expand sslFlags').stdout.strip.split("\r\n")
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
-  describe "The website ssl flags" do
-    subject { sslFlags }
-    it {should include 'Ssl128'}
+  get_sslFlags.zip(get_names).each do |sslFlags, names|
+    describe "The iss site: #{names} website ssl flags" do
+      subject { sslFlags }
+      it {should include 'Ssl'}
+    end
+    describe "The iss site: #{names} website ssl flags" do
+      subject { sslFlags }
+      it {should include 'Ssl128'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end
+ 

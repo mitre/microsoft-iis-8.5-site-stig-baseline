@@ -1,7 +1,7 @@
 LOG_DIRECTORY= attribute(
     'log_directory',
     description: 'Path of IIS log directory',
-    default: '%SystemDrive%\inetpub\logs\LogFiles'
+    default: 'C:\inetpub\logs\LogFiles'
 )
 
 control "V-76845" do
@@ -75,17 +75,33 @@ control "V-76845" do
 
   Configure a schedule to rollover log files on a regular basis."
 
-  log_directory = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty directory').stdout.strip
-  log_period = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "system.ApplicationHost/log" -Name centralW3CLogFile | select -expandProperty period').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_log_directory = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.ApplicationHost/log -name centralW3CLogFile | select -expand directory').stdout.strip.split("\r\n")
 
-  describe "The IIS log directory" do
-    subject { log_directory }
-    it {should cmp "#{LOG_DIRECTORY}"}
+
+  get_log_directory.zip(get_names).each do |log_directory, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} log directory" do
+      subject { log_directory }
+      it {should cmp "#{LOG_DIRECTORY}"}
+    end
   end
 
-  describe "The websites log file rollover period" do
-    subject { log_period }
-    it {should cmp "Daily"}
-  end
+  get_log_period = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.ApplicationHost/log -name centralW3CLogFile | select -expand period').stdout.strip.split("\r\n")
 
+  get_log_period.zip(get_names).each do |log_period, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites log file rollover period" do
+      subject { log_period }
+      it {should cmp "Daily"}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
+  end
 end

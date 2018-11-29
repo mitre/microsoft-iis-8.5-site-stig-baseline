@@ -79,39 +79,46 @@ control "V-76797" do
   .csh
 
   Select \"Apply\" from the \"Actions\" pane."
-  exe_files = command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.exe'}").stdout.strip
 
-  dll_files = command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.dll'}").stdout.strip
+  
+  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  
+  get_names.each do |names|
+    n = names.strip
+    exe_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.exe'}").stdout
+    dll_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.dll'}").stdout
 
-  com_files = command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.com'}").stdout.strip
+    com_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.com'}").stdout
 
-  bat_files = command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.bat'}").stdout.strip
+    bat_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.bat'}").stdout
 
-  csh_files = command("Get-WebConfiguration -pspath \"MACHINE/WEBROOT/APPHOST\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.csh'}").stdout.strip
-
-
-  describe "The MIME .exe files found" do
-    subject { exe_files }
-    it {should cmp ''}
+    csh_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.csh'}").stdout
+   
+    describe "The iss site: #{n} MIME .exe files found" do
+      subject { exe_files }
+      it { should be_empty }
+    end
+    describe "The iss site: #{n}  MIME .dll files found" do
+      subject { dll_files }
+      it { should be_empty }
+    end
+    describe "The iss site: #{n} MIME .com files found" do
+      subject { com_files }
+      it { should be_empty }
+    end
+    describe "The iss site: #{n} .bat files found" do
+      subject { bat_files }
+      it { should be_empty }
+    end
+    describe "The iss site: #{n} MIME .csh files found" do
+      subject { csh_files }
+      it { should be_empty }
+    end
   end
-
-  describe "The MIME .dll files found" do
-    subject { com_files }
-    it {should cmp ''}
-  end
-
-  describe "The MIME .com files found" do
-    subject { dll_files }
-    it {should cmp ''}
-  end
-
-  describe "The MIME .bat files found" do
-    subject { bat_files }
-    it {should cmp ''}
-  end
-
-  describe "The MIME .csh files found" do
-    subject { csh_files }
-    it {should cmp ''}
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

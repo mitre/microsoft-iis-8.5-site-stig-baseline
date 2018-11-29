@@ -56,10 +56,23 @@ control "V-76855" do
   Select \"True\" for the \"keepSessionIdSecure\" setting.
 
   Select \"Apply\" from the \"Actions\" pane."
-  keepSessionIdSecure = command('Get-WebConfigurationProperty -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip
+  
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_keepSessionIdSecure = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/asp -name * | select -expand session | select -expand keepSessionIdSecure').stdout.strip.split("\r\n")
 
-  describe "The website keepSessionIdSecure enabled setting" do
-    subject { keepSessionIdSecure }
-    it {should cmp 'True'}
+
+  get_keepSessionIdSecure.zip(get_names).each do |keepSessionIdSecure, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} website keepSessionIdSecure enabled setting" do
+      subject { keepSessionIdSecure }
+      it {should cmp 'True'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

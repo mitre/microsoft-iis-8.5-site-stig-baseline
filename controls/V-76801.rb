@@ -68,11 +68,24 @@ to a user and all other types must be disabled.
   Add each file name extension from the black list.
 
   Select \"Apply\" from the \"Actions\" pane."
-  get_request_filtering = command("Get-WebConfigurationProperty -filter /system.webserver/security/requestFiltering -name * | select -expand fileExtensions | select -expand Collection | select fileExtension, allowed | Findstr /v 'False --- fileExtension'").stdout.strip.split("\n")
-  get_request_filtering.each do |extension|
-  a = extension.strip
-  describe "#{a}" do
-      it { should be_in APPROVED_FILE_EXTENSIONS}
-    end 
+
+  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  
+  get_names.each do |names|
+    n = names.strip
+    get_request_filtering = command("Get-WebConfigurationProperty -pspath \"IIS:\Sites\\#{n}\" -filter /system.webserver/security/requestFiltering -name * | select -expand fileExtensions | select -expand Collection | select fileExtension, allowed | Findstr /v 'False --- fileExtension'").stdout.strip.split("\n")
+    get_request_filtering.each do |handler|
+      a = handler.strip
+      describe "The iss site: #{n} web allowed file extension: #{a}" do
+        subject { a }
+        it { should be_in APPROVED_FILE_EXTENSIONS}
+      end 
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

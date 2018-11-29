@@ -49,10 +49,21 @@ control "V-76837" do
   Scroll down to the \"Behavior\" section and set the value for \"Debug\" to
   \"False\"."
 
-  debug_enabled = command('Get-WebConfigurationProperty -Filter system.web/compilation -name * | select -expand debug').stdout.strip
-  
-  describe "The websites debugging enabled" do
-     subject { debug_enabled }
-     it {should cmp 'False' }
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_debug_enabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.web/compilation -name * | select -expand debug').stdout.strip.split("\r\n")
+
+  get_debug_enabled.zip(get_names).each do |debug_enabled, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites debugging enabled" do
+      subject { debug_enabled }
+      it {should cmp 'False' }
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

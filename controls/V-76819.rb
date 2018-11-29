@@ -50,10 +50,21 @@ control "V-76819" do
 
   Set the \"maxAllowedContentLength\" value to \"30000000\" or less."
 
-  maxAllowedContentLength = command('Get-WebConfigurationProperty -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxAllowedContentLength').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_maxAllowedContentLength = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/security/requestFiltering -name * | select -expand requestLimits | select -expand maxAllowedContentLength').stdout.strip.split("\r\n")
 
-  describe "The websites max allowed content length" do
-    subject { maxAllowedContentLength }
-    it {should cmp <= 30000000 }
+  get_maxAllowedContentLength.zip(get_names).each do |maxAllowedContentLength, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites max allowed content length" do
+      subject { maxAllowedContentLength }
+      it {should cmp <= 30000000 }
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

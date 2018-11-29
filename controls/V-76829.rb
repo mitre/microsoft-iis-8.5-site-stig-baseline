@@ -46,10 +46,21 @@ control "V-76829" do
 
   Under the \"Actions\" pane click \"Disabled\"."
 
-  directory_browsing = command('Get-WebConfigurationProperty -Filter system.webServer/directoryBrowse -name * | select -expand enabled').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_directory_browsing = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.webServer/directoryBrowse -name * | select -expand enabled').stdout.strip.split("\r\n")
 
-   describe "The websites enable directory browsing" do
-     subject { directory_browsing }
-     it {should cmp 'False'}
+  get_directory_browsing.zip(get_names).each do |directory_browsing, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites enable directory browsing" do
+      subject { directory_browsing }
+      it {should cmp 'False'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

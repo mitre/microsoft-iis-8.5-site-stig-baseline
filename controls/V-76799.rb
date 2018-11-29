@@ -62,12 +62,25 @@ control "V-76799" do
   Remove any script file extensions listed on the black list that are enabled.
 
   Select \"Apply\" from the \"Actions\" pane."
-  get_web_handlers = command("Get-WebHandler | select Name, Path | Findstr /v ' -- name'").stdout.strip.split("\n")
 
-  get_web_handlers.each do |handler|
-    a = handler.strip
-    describe "#{a}" do
-      it { should be_in APPROVED_SCRIPT_FILE_EXTENSIONS}
-    end 
+
+  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  
+  get_names.each do |names|
+    n = names.strip
+    get_web_handlers = command("Get-WebHandler -pspath \"IIS:\Sites\\#{n}\" | select Name, Path | Findstr /v ' -- name'").stdout.strip.split("\r\n")
+    get_web_handlers.each do |handler|
+      a = handler.strip
+      describe "The iss site: #{n} web handler: #{a}" do
+        subject { a }
+        it { should be_in APPROVED_SCRIPT_FILE_EXTENSIONS}
+      end 
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

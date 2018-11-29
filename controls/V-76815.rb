@@ -47,16 +47,26 @@ control "V-76815" do
   Click the Advanced Settings from the \"Actions\" pane.
 
   Change the Physical Path to the new partition and directory location."
-  get_physical_path = command("(Get-Website -Name 'Default Web Site').PhysicalPath").stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
-  get_system_drive = command("env | findstr SYSTEMDRIVE").stdout.strip
+  get_names.each do |names|
+    n = names.strip
+    get_physical_path = command("(Get-Website -Name '#{n}').PhysicalPath").stdout.strip
 
-  system_drive  = get_system_drive[12..-1]
+    get_system_drive = command("env | findstr SYSTEMDRIVE").stdout.strip
 
- 
-  path = get_physical_path.gsub(/%SystemDrive%/, "#{system_drive}")
-
-  describe path do
-    it { should_not match /"#{system_drive}"\\\w*/}
+    system_drive  = get_system_drive[12..-1]
+  
+    path = get_physical_path[0..1]
+    describe "IIS site #{n} physical path #{path}" do
+      subject {path}
+      it { should_not cmp "#{system_drive}"}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

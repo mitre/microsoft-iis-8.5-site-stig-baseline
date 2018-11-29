@@ -62,10 +62,23 @@ control "V-76805" do
 
   Select \"Apply\" from the \"Actions\" pane.
   "
-  trust_level = command('Get-WebConfigurationProperty -Filter system.web/trust -name * | select -expand level').stdout.strip
-
-  describe "The website  Global .NET Trust Level" do
-    subject { trust_level }
-    it {should cmp 'Full' }
+  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  
+  get_names.each do |names|
+    n = names.strip
+    get_trust_level = command("Get-WebConfigurationProperty -pspath \"IIS:\Sites\\#{n}\" -filter system.web/trust -name * | select -expand level").stdout.strip.split("\n")
+    get_trust_level.each do |trust_level|
+      a = trust_level.strip
+      describe "The iss site: #{n} Global .NET Trust Level" do
+        subject { a }
+        it {should cmp 'Full' }
+      end 
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

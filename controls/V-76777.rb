@@ -85,11 +85,21 @@ control "V-76777" do
   drop-dowssn list.
 
   Select \"Apply\" from the \"Actions\" pane."
-  cookie_setting = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand cookieless').stdout.strip
-  
-  describe "The website session state cookie settings" do
-    subject { cookie_setting }
-    it {should cmp "UseCookies"}
+  get_cookie_setting = command('Get-WebConfigurationProperty -Filter system.web/sessionState -pspath "IIS:\Sites\*" -name * | select -expand cookieless').stdout.strip.split("\r\n")
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+
+
+  get_cookie_setting.zip(get_names).each do |cookie_setting, names|
+    describe "The iss site: #{names} website session state cookie settings" do
+      subject { cookie_setting }
+      it {should cmp "UseCookies"}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end
 

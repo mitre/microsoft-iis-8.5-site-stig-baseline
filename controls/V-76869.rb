@@ -63,12 +63,21 @@ control "V-76869" do
   \"0\".
 
   Click OK."
-  virtual_memory = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand memory').stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_virtual_memory = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand memory').stdout.strip.split("\r\n")
 
-  describe "The amount of virtual memory an application pool uses for each IIS 8.5
-  website" do
-    subject { virtual_memory }
-    it {should_not cmp 0 }
+  get_virtual_memory.zip(get_names).each do |virtual_memory, names|
+    n = names.strip
+
+    describe "The amount of virtual memory an application pool uses for IIS site: #{n}" do
+      subject { virtual_memory }
+      it {should_not cmp 0 }
+    end
   end
-
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
+  end
 end

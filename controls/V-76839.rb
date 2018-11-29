@@ -56,10 +56,21 @@ control "V-76839" do
   Scroll down to the \"Process Model\" section and set the value for \"Idle
   Time-out\" to \"20\" or less."
 
-  idleTimeout_monitor = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand idleTimeout | select -expand TotalMinutes').stdout.strip
-  
-  describe "The websites idle monitor time-out" do
-     subject { idleTimeout_monitor }
-     it {should cmp <= 20}
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_idleTimeout_monitor = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand idleTimeout | select -expand TotalMinutes').stdout.strip.split("\r\n")
+
+  get_idleTimeout_monitor.zip(get_names).each do |idleTimeout_monitor, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} websites idle monitor time-out" do
+      subject { idleTimeout_monitor }
+      it {should cmp <= 20}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

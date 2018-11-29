@@ -95,27 +95,44 @@ control "V-76791" do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  fields = LOG_FIELDS
-  logging_fields = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand logExtFileFlags").stdout.strip.split(',')
+  
+  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  fields = command('Get-WebConfigurationProperty -filter "system.applicationHost/sites/*/logFile" -name * | select -expand logExtFileFlags').stdout.strip.split("\r\n")
+  field = LOG_FIELDS
 
-  fields.each do |myField|
-    describe "#{myField}" do
-      it { should be_in logging_fields}
+  fields.each do |f|
+    field.zip(get_names).each do |myField, names|
+      describe "The iis site #{names} logging field #{myField}" do
+        subject {myField}
+        it { should be_in f}
+      end
     end
-   
-  end
-  log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/siteDefaults/logFile" -name "logFormat"').stdout.strip
-
-  describe "IIS Logging format" do
-    subject { log_format }
-    it { should cmp 'W3C' }
   end
 
-  custom_field_configuration = command('Get-WebConfiguration -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/siteDefaults/logFile/customFields/*"').stdout.strip
-  describe "IIS Custom Fields logging configuration" do
-    subject { custom_field_configuration }
-    it { should match /sourceName\s+:\s+User-Agent\s+sourceType\s+:\s+RequestHeader/}
-    it { should match /sourceName\s+:\s+Authorization\s+sourceType\s+:\s+RequestHeader/}
-    it { should match /sourceName\s+:\s+Content-Type\s+sourceType\s+:\s+ServerVariable/}
+  log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/*/logFile" -name "logFormat"').stdout.strip.split("\r\n")
+  
+  log_format.zip(get_names).each do |format, names|
+    describe "The iss site: #{names} logging format" do
+      subject { format }
+        it { should cmp 'W3C' }
+    end
+  end
+
+  custom_field_configuration = []
+  get_names.each do |names|
+
+    custom_field_configuration = command("Get-WebConfiguration -filter \"system.applicationHost/sites/site[@name=\'#{names}\']/logFile/customFields/*\"").stdout.strip
+    describe "IIS Custom Fields logging configuration" do
+      subject { custom_field_configuration }
+      it { should match /sourceName\s+:\s+User-Agent\s+sourceType\s+:\s+RequestHeader/}
+      it { should match /sourceName\s+:\s+Authorization\s+sourceType\s+:\s+RequestHeader/}
+      it { should match /sourceName\s+:\s+Content-Type\s+sourceType\s+:\s+ServerVariable/}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

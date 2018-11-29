@@ -1,31 +1,31 @@
 SITE_NAME= attribute(
     'site_name',
     description: 'Name of IIS site',
-    default: 'Default Web Site'
+    default: ['tt', 'Default']
 )
 
 HTTP_IP= attribute(
     'http_ip',
     description: 'IP address used for http',
-    default: '10.0.2.15'
+    default: ['10.0.2.15', '0.0.0.0']
 )
 
 HTTP_HOSTNAME= attribute(
     'http_hostname',
     description: 'Hostname used for http',
-    default: 'local'
+    default: ['local', 'l']
 )
 
 HTTPS_IP= attribute(
     'https_ip',
     description: 'IP address used for https',
-    default: '10.0.2.15'
+    default: ['10.0.2.15', '0.0.0.0']
 )
 
 HTTPS_HOSTNAME= attribute(
     'https_hostname',
     description: 'Hostname used for https',
-    default: '10.0.2.15'
+    default: ['localhttps', 'test']
 )
 
 control "V-76847" do
@@ -92,9 +92,17 @@ control "V-76847" do
   In the “Action” Pane, click “Bindings\".
 
   Edit to change an existing binding and set the correct ports and protocol."
-  describe iis_site("#{SITE_NAME}") do
-    it { should exist }
-    it { should have_binding("http #{HTTP_IP}:80:#{HTTP_HOSTNAME}") }
-    it { should have_binding("https #{HTTPS_IP}:443:#{HTTPS_HOSTNAME}") }
+  
+  SITE_NAME.zip(HTTP_IP, HTTP_HOSTNAME).each do |site, httpip, httphostname|
+    describe iis_site("#{site}") do
+      it { should exist }
+      it { should have_binding("http #{httpip}:80:#{httphostname}") }
+    end
+  end
+  SITE_NAME.zip(HTTPS_IP, HTTPS_HOSTNAME).each do |site, httpsip, httsphostname|
+    describe iis_site("#{site}") do
+      it { should exist }
+      it { should have_binding("https #{httpsip}:80:#{httsphostname}") }
+    end
   end
 end

@@ -60,18 +60,29 @@ control "V-76785" do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  iis_modules = command("Get-WebConfiguration  system.webServer/globalModules/*").stdout.strip
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
-  describe "Is required IIS Module for ETW (Tracing) installed " do
-    subject { iis_modules }
-    it { should include 'TracingModule' }
+  log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/*/logFile" -name "logFormat"').stdout.strip.split("\r\n")
+
+  log_format.zip(get_names).each do |format, names|
+    describe "The iss site: #{names} logging format" do
+      subject { format }
+        it { should cmp 'W3C' }
+    end
   end
+  iis_logging_configuration = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "System.Applicationhost/Sites/*/logfile"  -name logTargetW3C').stdout.strip.split("\r\n")
 
-  iis_logging_configuration = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST" -filter "System.Applicationhost/Sites/SiteDefaults/logfile"  -name logTargetW3C').stdout.strip.split(",")
-
-  describe "IIS Logging configuration   " do
-    subject { iis_logging_configuration }
-    it { should include 'File' }
+  iis_logging_configuration.zip(get_names).each do |config, names|
+    describe "The iss site: #{names} logging configuration" do
+      subject { config }
+        it { should include 'File' }
     it { should include 'ETW' }
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

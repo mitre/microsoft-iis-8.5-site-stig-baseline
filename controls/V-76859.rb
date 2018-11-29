@@ -82,10 +82,22 @@ control "V-76859" do
 
   Select \"Apply\" from the \"Actions\" pane."
  
-  compressionEnabled = command('Get-WebConfigurationProperty -Filter system.web/sessionState -name * | select -expand compressionEnabled').stdout.strip
-  
-  describe "The website compressionEnabled enabled setting" do
-    subject { compressionEnabled }
-    it {should cmp 'False'}
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_compressionEnabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.web/sessionState -name * | select -expand compressionEnabled').stdout.strip.split("\r\n")
+
+
+  get_compressionEnabled.zip(get_names).each do |compressionEnabled, names|
+    n = names.strip
+
+    describe "The IIS site: #{n} website compressionEnabled enabled setting" do
+      subject { compressionEnabled }
+      it {should cmp 'False'}
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

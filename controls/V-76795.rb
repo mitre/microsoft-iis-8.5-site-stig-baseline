@@ -63,14 +63,30 @@ control "V-76795" do
   Set the log file permissions for the appropriate group."
   #obtain the log directory
   log_directory = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/siteDefaults/logFile' -name * | select -expand directory").stdout.strip
-  
-  get_system_drive = command("env | findstr SYSTEMDRIVE").stdout.strip
+  get_log_directory = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/*/logFile' -name * | select -expand directory").stdout.strip.split("\r\n")
 
-  system_drive  = get_system_drive[12..-1]
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  dirs = []
+
+  get_log_directory.zip(get_names).each do |log_dir, names|
+
+    get_system_drive = command("env | findstr SYSTEMDRIVE").stdout.strip
+
+    system_drive  = get_system_drive[12..-1]
  
-  dir = log_directory.gsub(/%SystemDrive%/, "#{system_drive}")
-  
-  describe command("Get-Acl -Path '#{dir}' | Format-List | Findstr 'All' | Findstr /v 2") do
-    its('stdout')  { should eq "Access : NT SERVICE\\TrustedInstaller Allow  FullControl\r\n         NT AUTHORITY\\SYSTEM Allow  FullControl\r\n         BUILTIN\\Administrators Allow  FullControl\r\n"}
+    dirs = log_dir.gsub(/%SystemDrive%/, "#{system_drive}")
+ 
+    describe "IIS site #{names} log file directory #{dirs}" do
+      subject {file("#{dirs}")}
+         it { should be_allowed('read', by_user: 'BUILTIN\\Administrators Allow') }
+         it { should be_allowed('full-control', by_user: 'NT AUTHORITY\\SYSTEM') }
+         it { should be_allowed('full-control', by_user: 'NT SERVICE\\TrustedInstaller') }
+    end
+  end
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
   end
 end

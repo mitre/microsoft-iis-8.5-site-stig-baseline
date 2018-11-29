@@ -59,10 +59,22 @@ control "V-76867" do
   "
   applicationPool_requests = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip
 
-  describe "The maximum number of requests an application pool can process for
-  each IIS 8.5 website" do
-    subject { applicationPool_requests }
-    it {should cmp > 0 }
+  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_applicationPool_requests = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip.split("\r\n")
+
+
+  get_applicationPool_requests.zip(get_names).each do |applicationPool_requests, names|
+    n = names.strip
+
+    describe "The maximum number of requests an application pool can process for IIS site: #{n}" do
+      subject { applicationPool_requests }
+      it {should cmp > 0 }
+    end
   end
-  
+  if get_names.empty?
+    describe "There are no IIS sites configured" do
+      impact 0.0
+      skip "Control not applicable"
+    end
+  end
 end
