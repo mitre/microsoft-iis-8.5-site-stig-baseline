@@ -15,8 +15,8 @@
 ||Check for risky commands (e.g. rm, del, purge, etc.)|Eugene Aronne|11/26/2018|*|
 ||Check for “stuck” situations (e.g., profile goes on forever)|Rony Xavier|11/30/2018|*|
 
+
 Note
 -------------------------------------------------------------------------------
-
-
+*** A completion date is entered in a row when all non-enhancement issues are resolved for that review row.
 
