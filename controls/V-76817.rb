@@ -1,22 +1,22 @@
-control "V-76817" do
-  title "The IIS 8.5 website must be configured to limit the maxURL."
+control 'V-76817' do
+  title 'The IIS 8.5 website must be configured to limit the maxURL.'
   desc  "Request filtering replaces URLScan in IIS, enabling administrators to
   create a more granular rule set with which to allow or reject inbound web
   content. By setting limits on web requests, it helps to ensure availability of
   web services and may also help mitigate the risk of buffer overflow type
   attacks. The MaxURL Request Filter limits the number of bytes the server will
   accept in a URL."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000246-WSR-000149"
-  tag "gid": "V-76817"
-  tag "rid": "SV-91513r1_rule"
-  tag "stig_id": "IISW-SI-000225"
-  tag "fix_id": "F-83513r1_fix"
-  tag "cci": ["CCI-001094"]
-  tag "nist": ["SC-5 (1)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000246-WSR-000149'
+  tag "gid": 'V-76817'
+  tag "rid": 'SV-91513r1_rule'
+  tag "stig_id": 'IISW-SI-000225'
+  tag "fix_id": 'F-83513r1_fix'
+  tag "cci": ['CCI-001094']
+  tag "nist": ['SC-5 (1)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
-  tag "documentable": false 
+  tag "documentable": false
   tag "mitigations": nil
   tag "severity_override_guidance": false
   tag "potential_impacts": nil
@@ -53,13 +53,15 @@ control "V-76817" do
     n = names.strip
     describe "IIS site: #{n} websites maxUrl" do
       subject { maxurl }
-      it {should cmp <= 4096 }
+      it { should cmp <= 4096 }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
-end 
+end

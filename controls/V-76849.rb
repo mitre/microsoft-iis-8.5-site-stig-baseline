@@ -1,17 +1,17 @@
-control "V-76849" do
+control 'V-76849' do
   title "The IIS 8.5 private website have a server certificate issued by DoD
   PKI or DoD-approved PKI Certification Authorities (CAs)."
-  desc  "The use of a DoD PKI certificate ensures clients the private website
+  desc "The use of a DoD PKI certificate ensures clients the private website
   they are connecting to is legitimate, and is an essential part of the DoD
   defense-in-depth strategy."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000427-WSR-000186"
-  tag "gid": "V-76849"
-  tag "rid": "SV-91545r2_rule"
-  tag "stig_id": "IISW-SI-000241"
-  tag "fix_id": "F-83545r1_fix"
-  tag "cci": ["CCI-002470"]
-  tag "nist": ["SC-23 (5)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000427-WSR-000186'
+  tag "gid": 'V-76849'
+  tag "rid": 'SV-91545r2_rule'
+  tag "stig_id": 'IISW-SI-000241'
+  tag "fix_id": 'F-83545r1_fix'
+  tag "cci": ['CCI-002470']
+  tag "nist": ['SC-23 (5)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -66,15 +66,10 @@ control "V-76849" do
 
   Assign the certificate to the website by choosing it under the SSL
   Certificate drop-down and clicking OK."
-  certificate_store = command("Import-Module WebAdministration; Get-ChildItem IIS:SSLBindings | select -expand Store | Findstr /v 'Store ---'").stdout.strip
-  certificate_subject = command("Get-ChildItem CERT:LocalMachine\\#{certificate_store} | select Subject | Findstr /v 'Subject --'").stdout.strip
-  certificate_issuer = command("Get-ChildItem CERT:LocalMachine\\#{certificate_store} | select Issuer | Findstr /v 'Issuer --'").stdout.strip
 
-  describe certificate_subject do
-    it { should match  /CN=DoD Root\s\w*/ }
+  describe 'Manually review the site certificate' do
+    skip 'Manually review to confirm that the certificate trust hierarchy leads
+    to the DoD PKI Root CA, DoD-approved external certificate authority (ECA),
+    or DoD-approved external partner'
   end
-  describe certificate_issuer do
-    it { should match  /CN=DoD Root\s\w*/ }
-  end
-
 end

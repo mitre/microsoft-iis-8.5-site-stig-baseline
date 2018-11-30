@@ -1,13 +1,7 @@
-LOG_FIELDS = attribute(
-    'fields',
-    description: 'List of fields to be included in Web Server Logging Configuration',
-    default: ['Date', 'Time', 'ClientIP', 'UserName', 'Method', 'UriQuery', 'HttpStatus', 'Referer']
-)
-
-control "V-76783" do
+control 'V-76783' do
   title "The enhanced logging for each IIS 8.5 website must be enabled and
   capture, record, and log all content related to a user session."
-  desc  "Log files are a critical component to the successful management of an
+  desc "Log files are a critical component to the successful management of an
   IS used within the DoD. By generating log files with useful information web
   administrators can leverage them in the event of a disaster, malicious attack,
   or other site-specific needs.
@@ -26,15 +20,15 @@ control "V-76783" do
   success/fail indications, file names involved, access control, or flow control
   rules invoked.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000092-WSR-000055"
-  tag "satisfies": ["SRG-APP-000092-WSR-000055", "SRG-APP-000093-WSR-000053"]
-  tag "gid": "V-76783"
-  tag "rid": "SV-91479r1_rule"
-  tag "stig_id": "IISW-SI-000205"
-  tag "fix_id": "F-83479r1_fix"
-  tag "cci": ["CCI-001462", "CCI-001464"]
-  tag "nist": ["AU-14 (2)", "AU-14 (1)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000092-WSR-000055'
+  tag "satisfies": ['SRG-APP-000092-WSR-000055', 'SRG-APP-000093-WSR-000053']
+  tag "gid": 'V-76783'
+  tag "rid": 'SV-91479r1_rule'
+  tag "stig_id": 'IISW-SI-000205'
+  tag "fix_id": 'F-83479r1_fix'
+  tag "cci": ['CCI-001462', 'CCI-001464']
+  tag "nist": ['AU-14 (2)', 'AU-14 (1)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -65,7 +59,7 @@ control "V-76783" do
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
   web server:
 
-  Open the IIS 8.5 Manager. 
+  Open the IIS 8.5 Manager.
 
   Click the site name.
 
@@ -77,30 +71,32 @@ control "V-76783" do
   URI Query, Protocol Status, and Referrer.
 
   Select \"Apply\" from the \"Actions\" pane."
-  is_file_logging_enabled_string = command('Get-WebConfiguration system.applicationHost/log/centralW3CLogFile -pspath "IIS:\Sites\*" | select -expand enabled').stdout.strip.split("\r\n")
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
-  fields = command('Get-WebConfigurationProperty -filter "system.applicationHost/sites/*/logFile" -name * | select -expand logExtFileFlags').stdout.strip.split("\r\n")
-  field = LOG_FIELDS
-  is_file_logging_enabled_string.zip(get_names).each do |is_file_logging_enabled, names|
-    describe "The iss site: #{names} Central W3C Logging Configuration Enabled" do
-      subject { is_file_logging_enabled }
-      it {should cmp "True"}
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+
+  site_names.each do |site_name|
+    iis_logging_configuration = json(command: %(Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter 'System.Applicationhost/Sites/site[@name="#{site_name}"]/logfile'  -Name * | ConvertTo-Json))
+
+    describe "IIS Logging configuration for Site :'#{site_name}'" do
+      subject { iis_logging_configuration }
+      its('logFormat') { should cmp 'W3C' }
+      its('logExtFileFlags') { should include 'Date' }
+      its('logExtFileFlags') { should include 'Time' }
+      its('logExtFileFlags') { should include 'ClientIP' }
+      its('logExtFileFlags') { should include 'UserName' }
+      its('logExtFileFlags') { should include 'Method' }
+      its('logExtFileFlags') { should include 'UriQuery' }
+      its('logExtFileFlags') { should include 'HttpStatus' }
+      its('logExtFileFlags') { should include 'Referer' }
     end
   end
 
-  fields.each do |f|
-    field.zip(get_names).each do |myField, names|
-      describe "The iis site #{names} logging field #{myField}" do
-        subject {myField}
-        it { should be_in f}
-      end
-    end
-  end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

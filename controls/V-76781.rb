@@ -1,7 +1,7 @@
-control "V-76781" do
+control 'V-76781' do
   title "A public IIS 8.5 website must only accept Secure Socket Layer
   connections when authentication is required."
-  desc  "Transport Layer Security (TLS) encryption is a required security
+  desc "Transport Layer Security (TLS) encryption is a required security
   setting for a private web server. Encryption of private information is
   essential to ensuring data confidentiality. If private information is not
   encrypted, it can be intercepted and easily read by an unauthorized party. A
@@ -11,14 +11,14 @@ control "V-76781" do
       FIPS 140-2-approved TLS versions include TLS V1.1 or greater. NIST SP
   800-52 specifies the preferred configurations for government systems.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000014-WSR-000006"
-  tag "gid": "V-76781"
-  tag "rid": "SV-91477r1_rule"
-  tag "stig_id": "IISW-SI-000204"
-  tag "fix_id": "F-83477r1_fix"
-  tag "cci": ["CCI-000068"]
-  tag "nist": ["AC-17 (2)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000014-WSR-000006'
+  tag "gid": 'V-76781'
+  tag "rid": 'SV-91477r1_rule'
+  tag "stig_id": 'IISW-SI-000204'
+  tag "fix_id": 'F-83477r1_fix'
+  tag "cci": ['CCI-000068']
+  tag "nist": ['AC-17 (2)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -57,20 +57,30 @@ control "V-76781" do
   Select \"Require SSL\" check box.
 
   Select \"Apply\" from the \"Actions\" pane."
-  get_sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -pspath "IIS:\Sites\*" -name * | select -expand sslFlags').stdout.strip.split("\r\n")
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
-  get_sslFlags.zip(get_names).each do |sslFlags, names|
-    describe "The iss site: #{names} website ssl flags" do
-      subject { sslFlags }
-      it {should include 'Ssl'}
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+
+  site_names.each do |site_name|
+    iis_configuration = json(command: "Get-WebConfigurationProperty -Filter system.webServer/security/access 'IIS:\\Sites\\#{site_name}'  -Name * | ConvertTo-Json")
+
+    describe "IIS sessionState for site :'#{site_name}'" do
+      subject { iis_configuration }
+      its('sslFlags') { should include 'Ssl' }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+
+  if attribute('private_server')
+    impact 0.0
+    desc 'The server being reviewed is a private IIS 8.5 web
+    server, hence this control is Not Applicable.'
+  end
+
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end
-

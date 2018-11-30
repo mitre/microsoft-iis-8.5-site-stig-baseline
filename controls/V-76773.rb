@@ -1,4 +1,4 @@
-control "V-76773" do
+control 'V-76773' do
   title "The IIS 8.5 websites MaxConnections setting must be configured to
   limit the number of allowed simultaneous session requests."
   desc  "Resource exhaustion can occur when an unlimited number of concurrent
@@ -7,14 +7,14 @@ control "V-76773" do
   HTTP/HTTPS requests per IP address and may include, where feasible, limiting
   parameter values associated with keepalive (i.e., a parameter used to limit the
   amount of time a connection may be inactive)."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000001-WSR-000001"
-  tag "gid": "V-76773"
-  tag "rid": "SV-91469r1_rule"
-  tag "stig_id": "IISW-SI-000200"
-  tag "fix_id": "F-83469r1_fix"
-  tag "cci": ["CCI-000054"]
-  tag "nist": ["AC-10", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000001-WSR-000001'
+  tag "gid": 'V-76773'
+  tag "rid": 'SV-91469r1_rule'
+  tag "stig_id": 'IISW-SI-000200'
+  tag "fix_id": 'F-83469r1_fix'
+  tag "cci": ['CCI-000054']
+  tag "nist": ['AC-10', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -55,12 +55,8 @@ control "V-76773" do
 
   Set the \"maxconnections\" parameter to a value greater than zero."
 
-  site_maxconnections = command('Get-WebConfigurationProperty -Filter system.applicationHost/sites -name * | select -expand siteDefaults | select -expand limits | select -expand MaxConnections').stdout.strip
-
-  describe "The websites MaxConnections" do
-    subject { site_maxconnections }
-    it { should cmp > 0  }
+  describe 'IIS Configuration' do
+    subject { json(command: 'Get-WebConfigurationProperty -Filter system.applicationHost/sites -name * | select -expand siteDefaults | select -expand limits | ConvertTo-Json ') }
+    its('maxBandwidth') { should cmp > 0 }
   end
-  
 end
-

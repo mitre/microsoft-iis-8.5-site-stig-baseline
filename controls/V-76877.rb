@@ -1,7 +1,7 @@
-control "V-76877" do
+control 'V-76877' do
   title "The application pools pinging monitor for each IIS 8.5 website must be
   enabled."
-  desc  "Windows Process Activation Service (WAS) manages application pool
+  desc "Windows Process Activation Service (WAS) manages application pool
   configurations and may flag a worker process as unhealthy and shut it down. An
   application pool’s pinging monitor must be enabled to confirm worker processes
   are functional. A lack of response from the worker process might mean the
@@ -10,14 +10,14 @@ control "V-76877" do
   need adjustment to gain access to timely information about application pool
   health without triggering false, unhealthy conditions; for example, instability
   caused by an application."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76877"
-  tag "rid": "SV-91573r1_rule"
-  tag "stig_id": "IISW-SI-000257"
-  tag "fix_id": "F-83573r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76877'
+  tag "rid": 'SV-91573r1_rule'
+  tag "stig_id": 'IISW-SI-000257'
+  tag "fix_id": 'F-83573r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -54,21 +54,23 @@ control "V-76877" do
   Enabled\" to \"True\".
 
   Click OK."
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_pingingEnabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip.split("\r\n")
 
-  get_pingingEnabled.zip(get_names).each do |pingingEnabled, names|
-    n = names.strip
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
-    describe "The application pools pinging monitor for for IIS site: #{n} enabled setting" do
-      subject { pingingEnabled }
-      it {should cmp 'True'}
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand processModel | ConvertTo-Json")
+
+    describe "The pingingEnabled setting for IIS Application Pool :'#{application_pool}'" do
+      subject { iis_configuration }
+      its('pingingEnabled') { should cmp 'True' }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+  if application_pool_names.empty?
+    impact 0.0
+    desc 'There are no application pool configured hence the control is Not-Applicable'
+
+    describe 'No application pool where found to be reviewed' do
+      skip 'No application pool where found to be reviewed'
     end
   end
 end

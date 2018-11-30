@@ -1,36 +1,6 @@
-SITE_NAME= attribute(
-    'site_name',
-    description: 'Name of IIS site',
-    default: ['tt', 'Default']
-)
-
-HTTP_IP= attribute(
-    'http_ip',
-    description: 'IP address used for http',
-    default: ['10.0.2.15', '0.0.0.0']
-)
-
-HTTP_HOSTNAME= attribute(
-    'http_hostname',
-    description: 'Hostname used for http',
-    default: ['local', 'l']
-)
-
-HTTPS_IP= attribute(
-    'https_ip',
-    description: 'IP address used for https',
-    default: ['10.0.2.15', '0.0.0.0']
-)
-
-HTTPS_HOSTNAME= attribute(
-    'https_hostname',
-    description: 'Hostname used for https',
-    default: ['localhttps', 'test']
-)
-
- control "V-76807" do
-  title "Each IIS 8.5 website must be assigned a default host header."
-  desc  "The web server must be configured to listen on a specified IP address
+control 'V-76807' do
+  title 'Each IIS 8.5 website must be assigned a default host header.'
+  desc "The web server must be configured to listen on a specified IP address
   and port. Without specifying an IP address and port for the web server to
   utilize, the web server will listen on all IP addresses available to the
   hosting server. If the web server has multiple IP addresses, i.e., a management
@@ -42,14 +12,14 @@ HTTPS_HOSTNAME= attribute(
   utilities, files, ports, and protocols that are protected on the desired
   application IP address.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000142-WSR-000089"
-  tag "gid": "V-76807"
-  tag "rid": "SV-91503r1_rule"
-  tag "stig_id": "IISW-SI-000219"
-  tag "fix_id": "F-83503r1_fix"
-  tag "cci": ["CCI-000382"]
-  tag "nist": ["CM-7 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000142-WSR-000089'
+  tag "gid": 'V-76807'
+  tag "rid": 'SV-91503r1_rule'
+  tag "stig_id": 'IISW-SI-000219'
+  tag "fix_id": 'F-83503r1_fix'
+  tag "cci": ['CCI-000382']
+  tag "nist": ['CM-7 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -90,17 +60,26 @@ HTTPS_HOSTNAME= attribute(
 
   Select \"Apply\" from the \"Actions\" pane."
 
+  site_name = attribute('site_name')
 
-  SITE_NAME.zip(HTTP_IP, HTTP_HOSTNAME).each do |site, httpip, httphostname|
-    describe iis_site("#{site}") do
+  http_ip = attribute('http_ip')
+
+  http_hostname = attribute('http_hostname')
+
+  https_ip = attribute('https_ip')
+
+  https_hostname = attribute('https_hostname')
+
+  site_name.zip(http_ip, http_hostname).each do |site, httpip, httphostname|
+    describe iis_site(site.to_s) do
       it { should exist }
       it { should have_binding("http #{httpip}:80:#{httphostname}") }
     end
   end
-  SITE_NAME.zip(HTTPS_IP, HTTPS_HOSTNAME).each do |site, httpsip, httsphostname|
-    describe iis_site("#{site}") do
+  site_name.zip(https_ip, https_hostname).each do |site, httpsip, httsphostname|
+    describe iis_site(site.to_s) do
       it { should exist }
       it { should have_binding("https #{httpsip}:80:#{httsphostname}") }
     end
   end
-end 
+end

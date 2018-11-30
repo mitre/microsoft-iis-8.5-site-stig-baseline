@@ -1,8 +1,8 @@
-control "V-76859" do
+control 'V-76859' do
   title "Cookies exchanged between the IIS 8.5 website and the client must use
   SSL/TLS, have cookie properties set to prohibit client-side scripts from
   reading the cookie data and must not be compressed."
-  desc  "A cookie is used when a web server needs to share data with the
+  desc "A cookie is used when a web server needs to share data with the
   client's browser. The data is often used to remember the client when the client
   returns to the hosted application at a later date. A session cookie is a
   special type of cookie used to remember the client during the session. The
@@ -27,16 +27,16 @@ control "V-76859" do
   property) to disallow client-side scripts from reading cookies better protects
   the information inside the cookie.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000439-WSR-000154"
-  tag "satisfies": ["SRG-APP-000439-WSR-000154", "SRG-APP-000439-SSR-000155",
-  "SRG-APP-000439-WSR-000153"]
-  tag "gid": "V-76859"
-  tag "rid": "SV-91555r2_rule"
-  tag "stig_id": "IISW-SI-000246"
-  tag "fix_id": "F-83555r1_fix"
-  tag "cci": ["CCI-002418"]
-  tag "nist": ["SC-8", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000439-WSR-000154'
+  tag "satisfies": ['SRG-APP-000439-WSR-000154', 'SRG-APP-000439-SSR-000155',
+                    'SRG-APP-000439-WSR-000153']
+  tag "gid": 'V-76859'
+  tag "rid": 'SV-91555r2_rule'
+  tag "stig_id": 'IISW-SI-000246'
+  tag "fix_id": 'F-83555r1_fix'
+  tag "cci": ['CCI-002418']
+  tag "nist": ['SC-8', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -81,23 +81,24 @@ control "V-76859" do
   Set the \"compressionEnabled\" to \"False\".
 
   Select \"Apply\" from the \"Actions\" pane."
- 
+
   get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
   get_compressionEnabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.web/sessionState -name * | select -expand compressionEnabled').stdout.strip.split("\r\n")
-
 
   get_compressionEnabled.zip(get_names).each do |compressionEnabled, names|
     n = names.strip
 
     describe "The IIS site: #{n} website compressionEnabled enabled setting" do
       subject { compressionEnabled }
-      it {should cmp 'False'}
+      it { should cmp 'False' }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

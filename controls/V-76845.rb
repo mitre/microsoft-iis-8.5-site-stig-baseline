@@ -1,14 +1,8 @@
-LOG_DIRECTORY= attribute(
-    'log_directory',
-    description: 'Path of IIS log directory',
-    default: 'C:\inetpub\logs\LogFiles'
-)
-
-control "V-76845" do
+control 'V-76845' do
   title "The IIS 8.5 website must use a logging mechanism that is configured to
   allocate log record storage capacity large enough to accommodate the logging
   requirements of the IIS 8.5 website."
-  desc  "In order to make certain that the logging mechanism used by the web
+  desc "In order to make certain that the logging mechanism used by the web
   server has sufficient storage capacity in which to write the logs, the logging
   mechanism needs to be able to allocate log record storage capacity.
 
@@ -19,14 +13,14 @@ control "V-76845" do
   disk. Refer to NIST SP 800-92 for specific requirements on log rotation and
   storage dependent on the impact of the web server.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000357-WSR-000150"
-  tag "gid": "V-76845"
-  tag "rid": "SV-91541r1_rule"
-  tag "stig_id": "IISW-SI-000238"
-  tag "fix_id": "F-83541r1_fix"
-  tag "cci": ["CCI-001849"]
-  tag "nist": ["AU-4", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000357-WSR-000150'
+  tag "gid": 'V-76845'
+  tag "rid": 'SV-91541r1_rule'
+  tag "stig_id": 'IISW-SI-000238'
+  tag "fix_id": 'F-83541r1_fix'
+  tag "cci": ['CCI-001849']
+  tag "nist": ['AU-4', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -75,33 +69,38 @@ control "V-76845" do
 
   Configure a schedule to rollover log files on a regular basis."
 
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_log_directory = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.ApplicationHost/log -name centralW3CLogFile | select -expand directory').stdout.strip.split("\r\n")
+  log_directory_path = attribute('log_directory')
 
+  get_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  get_log_directory.zip(get_names).each do |log_directory, names|
-    n = names.strip
+  system_drive = command('$env:SystemDrive').stdout.strip
 
-    describe "The IIS site: #{n} log directory" do
+  get_log_directory = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/*/logFile' -name * | select -expand directory").stdout.strip.split("\r\n")
+
+  get_log_directory.zip(get_names).each do |log_directory, name|
+    log_directory = log_directory.gsub(/%SystemDrive%/, system_drive.to_s)
+
+    describe "The IIS site: #{name} log directory" do
       subject { log_directory }
-      it {should cmp "#{LOG_DIRECTORY}"}
+      it { should cmp log_directory_path.to_s }
     end
   end
 
   get_log_period = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.ApplicationHost/log -name centralW3CLogFile | select -expand period').stdout.strip.split("\r\n")
 
-  get_log_period.zip(get_names).each do |log_period, names|
-    n = names.strip
-
-    describe "The IIS site: #{n} websites log file rollover period" do
+  get_log_period.zip(get_names).each do |log_period, name|
+    describe "The IIS site: #{name} websites log file rollover period" do
       subject { log_period }
-      it {should cmp "Daily"}
+      it { should cmp 'Daily' }
     end
   end
+
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

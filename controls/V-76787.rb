@@ -1,4 +1,4 @@
-control "V-76787" do
+control 'V-76787' do
   title "An IIS 8.5 website behind a load balancer or proxy server, must
 produce log records containing the source client IP and destination
 information."
@@ -19,14 +19,14 @@ logable event. When looking at the information forensically, this information
 is not helpful in the investigation of events. The web server must record with
 each event the client source of the event.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000098-WSR-000060"
-  tag "gid": "V-76787"
-  tag "rid": "SV-91483r1_rule"
-  tag "stig_id": "IISW-SI-000208"
-  tag "fix_id": "F-83483r1_fix"
-  tag "cci": ["CCI-000133"]
-  tag "nist": ["AU-3", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000098-WSR-000060'
+  tag "gid": 'V-76787'
+  tag "rid": 'SV-91483r1_rule'
+  tag "stig_id": 'IISW-SI-000208'
+  tag "fix_id": 'F-83483r1_fix'
+  tag "cci": ['CCI-000133']
+  tag "nist": ['AU-3', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -64,8 +64,8 @@ each event the client source of the event.
   passed and configure settings to pass web traffic to the IIS 8.5 web server
   transparently."
 
-  describe "Manual review of IIS Logs is required " do
-    skip "Ensure Client IP accurately identifies the client and not proxy server ( if used north of IIS )"
+  describe 'Manual review of IIS Logs is required ' do
+    skip 'Manually review to confirm  Client IP accurately identifies the client
+    and not proxy server ( if used north of IIS )'
   end
 end
-

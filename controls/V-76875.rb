@@ -1,17 +1,17 @@
-control "V-76875" do
+control 'V-76875' do
   title "The maximum queue length for HTTP.sys for each IIS 8.5 website must be
   explicitly configured."
-  desc  "In order to determine the possible causes of client connection errors
+  desc "In order to determine the possible causes of client connection errors
   and to conserve system resources, it is important to both log errors and manage
   those settings controlling requests to the application pool."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76875"
-  tag "rid": "SV-91571r1_rule"
-  tag "stig_id": "IISW-SI-000256"
-  tag "fix_id": "F-83571r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76875'
+  tag "rid": 'SV-91571r1_rule'
+  tag "stig_id": 'IISW-SI-000256'
+  tag "fix_id": 'F-83571r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -46,21 +46,22 @@ control "V-76875" do
   1000 or less.
 
   Click OK."
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_queueLength = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip.split("\r\n")
 
-  get_queueLength.zip(get_names).each do |queueLength, names|
-    n = names.strip
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
-    describe "The maximum queue length for HTTP.sys for IIS site: #{n}" do
-      subject { queueLength }
-      it {should cmp <= '1000'}
+  application_pool_names.each do |application_pool|
+    iis_configuration = command("Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select queueLength").stdout
+    describe "The maximum queue length for IIS Application Pool :'#{application_pool}'" do
+      subject { iis_configuration }
+      it { should cmp <= '1000' }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+  if application_pool_names.empty?
+    impact 0.0
+    desc 'There are no application pool configured hence the control is Not-Applicable'
+
+    describe 'No application pool where found to be reviewed' do
+      skip 'No application pool where found to be reviewed'
     end
   end
 end

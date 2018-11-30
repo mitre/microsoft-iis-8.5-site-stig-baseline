@@ -1,7 +1,7 @@
-control "V-76851" do
+control 'V-76851' do
   title "The IIS 8.5 private website must employ cryptographic mechanisms (TLS)
   and require client certificates."
-  desc  "When data is written to digital media, such as hard drives, mobile
+  desc "When data is written to digital media, such as hard drives, mobile
   computers, external/removable hard drives, personal digital assistants,
   flash/thumb drives, etc., there is risk of data loss and data compromise. User
   identities and passwords stored on the hard drive of the hosting hardware must
@@ -26,14 +26,14 @@ control "V-76851" do
 
       Also satisfies: SRG-APP-000439-WSR-000151
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000429-WSR-000113"
-  tag "gid": "V-76851"
-  tag "rid": "SV-91547r3_rule"
-  tag "stig_id": "IISW-SI-000242"
-  tag "fix_id": "F-83547r1_fix"
-  tag "cci": ["CCI-002476"]
-  tag "nist": ["SC-28 (1)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000429-WSR-000113'
+  tag "gid": 'V-76851'
+  tag "rid": 'SV-91547r3_rule'
+  tag "stig_id": 'IISW-SI-000242'
+  tag "fix_id": 'F-83547r1_fix'
+  tag "cci": ['CCI-002476']
+  tag "nist": ['SC-28 (1)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -41,7 +41,7 @@ control "V-76851" do
   tag "severity_override_guidance": false
   tag "potential_impacts": nil
   tag "third_party_tools": nil
-  tag "mitigation_controls": nil 
+  tag "mitigation_controls": nil
   tag "responsibility": nil
   tag "ia_controls": nil
   tag "check": "Follow the procedures below for each site hosted on the IIS 8.5
@@ -50,7 +50,7 @@ control "V-76851" do
   Open the IIS 8.5 Manager.
 
   Double-click the \"SSL Settings\" icon under the \"IIS\" section.
-   
+
   Verify \"Require SSL\" is checked.
 
   Verify \"Client Certificates Required\" is selected.
@@ -95,24 +95,25 @@ control "V-76851" do
 
   Click \"Apply\" in the \"Actions\" pane."
 
-  get_sslFlags = command('Get-WebConfigurationProperty -Filter system.webServer/security/access -pspath "IIS:\Sites\*" -name * | select -expand sslFlags').stdout.strip.split("\r\n")
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  get_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  get_sslFlags.zip(get_names).each do |sslFlags, names|
-    describe "The iss site: #{names} website ssl flags" do
-      subject { sslFlags }
-      it {should include 'Ssl'}
-    end
-    describe "The iss site: #{names} website ssl flags" do
-      subject { sslFlags }
-      it {should include 'Ssl128'}
+  get_names.each do |site_name|
+    iis_configuration = json(command: "Get-WebConfigurationProperty -Filter system.webServer/security/access 'IIS:\\Sites\\#{site_name}'  -Name * | ConvertTo-Json")
+
+    describe "IIS sessionState for site :'#{site_name}'" do
+      subject { iis_configuration }
+      its('sslFlags') { should include 'Ssl' }
+      its('sslFlags') { should include 'SslRequireCert' }
+      its('sslFlags') { should include 'Ssl128' }
     end
   end
+
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end
- 

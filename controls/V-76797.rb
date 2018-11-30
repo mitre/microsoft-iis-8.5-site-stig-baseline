@@ -1,7 +1,7 @@
-control "V-76797" do
+control 'V-76797' do
   title "The IIS 8.5 website must have Multipurpose Internet Mail Extensions
   (MIME) that invoke OS shell programs disabled."
-  desc  "Controlling what a user of a hosted application can access is part of
+  desc "Controlling what a user of a hosted application can access is part of
   the security posture of the web server. Any time a user can access more
   functionality than is needed for the operation of the hosted application poses
   a security issue. A user with too much access can view information that is not
@@ -18,14 +18,14 @@ control "V-76797" do
   unauthorized activities that could damage the security posture of the web
   server.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000141-WSR-000081"
-  tag "gid": "V-76797"
-  tag "rid": "SV-91493r1_rule"
-  tag "stig_id": "IISW-SI-000214"
-  tag "fix_id": "F-83493r1_fix"
-  tag "cci": ["CCI-000381"]
-  tag "nist": ["CM-7 a", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000141-WSR-000081'
+  tag "gid": 'V-76797'
+  tag "rid": 'SV-91493r1_rule'
+  tag "stig_id": 'IISW-SI-000214'
+  tag "fix_id": 'F-83493r1_fix'
+  tag "cci": ['CCI-000381']
+  tag "nist": ['CM-7 a', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -80,9 +80,8 @@ control "V-76797" do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  
   get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  
+
   get_names.each do |names|
     n = names.strip
     exe_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.exe'}").stdout
@@ -93,7 +92,7 @@ control "V-76797" do
     bat_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.bat'}").stdout
 
     csh_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.csh'}").stdout
-   
+
     describe "The iss site: #{n} MIME .exe files found" do
       subject { exe_files }
       it { should be_empty }
@@ -116,9 +115,11 @@ control "V-76797" do
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end
