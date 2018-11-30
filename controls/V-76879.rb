@@ -52,19 +52,21 @@ control "V-76879" do
   \"Enabled\" to \"True\".
 
   Click OK."
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_rapidFailProtection = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand failure | select -expand rapidFailProtection').stdout.strip.split("\r\n")
 
-  get_rapidFailProtection.zip(get_names).each do |rapidFailProtection, names|
-    n = names.strip
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-    describe "The application pools rapid fail protection for IIS site: #{n} enabled setting" do
-      subject { rapidFailProtection }
-      it {should cmp 'True'}
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
+
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand failure | ConvertTo-Json")
+
+    describe "The rapid fail protection setting for IIS Application Pool :'#{application_pool}'" do
+      subject { iis_configuration }
+      its('rapidFailProtection') { should cmp 'True'} 
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end

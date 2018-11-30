@@ -58,22 +58,21 @@ control "V-76873" do
   Set both the \"Regular time interval\" and \"Specific time\" options to
   \"True\"."
 
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_names.each do |names|
-      n = names.strip
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-    get_recycle_time = command("Get-WebConfigurationProperty -pspath \"IIS:\Sites\\#{n}\" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand logEventOnRecycle").stdout.strip.split("\r\n")
-    get_recycle_time.each do |recycle_time|
-  
-      describe "The application pool should set the recycle time for IIS site: #{n}" do
-        subject { recycle_time }
-        it {should include 'Time'}
-        it {should include 'Schedule'}
-      end
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
+
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand recycling | ConvertTo-Json")
+
+    describe "The recycle time for IIS Application Pool :'#{application_pool}" do
+      subject { iis_configuration }
+      its('logEventOnRecycle') { should include 'Time' }
+      its('logEventOnRecycle') { should include 'Schedule' }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end

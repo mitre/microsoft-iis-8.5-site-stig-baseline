@@ -46,19 +46,19 @@ control "V-76875" do
   1000 or less.
 
   Click OK."
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_queueLength = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand queueLength').stdout.strip.split("\r\n")
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  get_queueLength.zip(get_names).each do |queueLength, names|
-    n = names.strip
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
-    describe "The maximum queue length for HTTP.sys for IIS site: #{n}" do
-      subject { queueLength }
-      it {should cmp <= '1000'}
+  application_pool_names.each do |application_pool|
+    iis_configuration = command("Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select queueLength").stdout
+    describe "The maximum queue length for IIS Application Pool :'#{application_pool}'" do
+      subject { iis_configuration }
+      it { should cmp <= '1000'} 
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end

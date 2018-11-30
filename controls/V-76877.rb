@@ -54,19 +54,21 @@ control "V-76877" do
   Enabled\" to \"True\".
 
   Click OK."
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_pingingEnabled = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand processModel | select -expand pingingEnabled').stdout.strip.split("\r\n")
 
-  get_pingingEnabled.zip(get_names).each do |pingingEnabled, names|
-    n = names.strip
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-    describe "The application pools pinging monitor for for IIS site: #{n} enabled setting" do
-      subject { pingingEnabled }
-      it {should cmp 'True'}
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
+
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand processModel | ConvertTo-Json")
+
+    describe "The pingingEnabled setting for IIS Application Pool :'#{application_pool}'" do
+      subject { iis_configuration }
+      its('pingingEnabled') { should cmp 'True'} 
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end

@@ -57,22 +57,20 @@ control "V-76867" do
 
   Click OK.
   "
-  applicationPool_requests = command('Get-WebConfigurationProperty -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_applicationPool_requests = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand requests').stdout.strip.split("\r\n")
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand recycling | select -expand periodicRestart | ConvertTo-Json")
 
-  get_applicationPool_requests.zip(get_names).each do |applicationPool_requests, names|
-    n = names.strip
-
-    describe "The maximum number of requests an application pool can process for IIS site: #{n}" do
-      subject { applicationPool_requests }
-      it {should cmp > 0 }
+    describe "The maximum number of requests an application pool can process for IIS Application Pool :'#{application_pool}'" do
+      subject { iis_configuration }
+      its('requests') { should  cmp > 3 }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end

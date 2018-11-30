@@ -56,20 +56,21 @@ control "V-76871" do
 
   Scroll down to the \"Recycling\" section and set the value for \"Private Memory
   Limit\" to a value other than \"0\"."
-  
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_private_memory = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand privateMemory').stdout.strip.split("\r\n")
 
-  get_private_memory.zip(get_names).each do |private_memory, names|
-    n = names.strip
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-    describe "The amount of private memory an application pool uses for IIS site: #{n}" do
-      subject { private_memory }
-      it {should_not cmp 0 }
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
+
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand recycling | select -expand periodicRestart | ConvertTo-Json")
+
+    describe "The amount of private memory for IIS Application Pool :'#{application_pool}' uses" do
+      subject { iis_configuration }
+      its('privateMemory') { should_not cmp 0 }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end

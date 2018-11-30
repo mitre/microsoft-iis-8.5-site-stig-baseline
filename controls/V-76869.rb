@@ -63,19 +63,21 @@ control "V-76869" do
   \"0\".
 
   Click OK."
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  get_virtual_memory = command('Get-WebConfigurationProperty -pspath "IIS:\Sites\*" -Filter system.applicationHost/applicationPools -name * | select -expand applicationPoolDefaults | select -expand recycling | select -expand periodicRestart | select -expand memory').stdout.strip.split("\r\n")
 
-  get_virtual_memory.zip(get_names).each do |virtual_memory, names|
-    n = names.strip
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-    describe "The amount of virtual memory an application pool uses for IIS site: #{n}" do
-      subject { virtual_memory }
-      it {should_not cmp 0 }
+  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
+
+  application_pool_names.each do |application_pool|
+    iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand recycling | select -expand periodicRestart | ConvertTo-Json")
+
+    describe "The amount of virtual memory for IIS Application Pool :'#{application_pool}' uses" do
+      subject { iis_configuration }
+      its('memory') { should_not cmp 0 }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
+  if application_pool_names.empty?
+    describe "There are no IIS application pools configured" do
       impact 0.0
       skip "Control not applicable"
     end
