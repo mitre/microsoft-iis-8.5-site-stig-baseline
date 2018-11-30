@@ -1,7 +1,7 @@
-control "V-76803" do
+control 'V-76803' do
   title "The IIS 8.5 website must have Web Distributed Authoring and Versioning
   (WebDAV) disabled."
-  desc  "A web server can be installed with functionality that, just by its
+  desc "A web server can be installed with functionality that, just by its
   nature, is not secure. Web Distributed Authoring (WebDAV) is an extension to
   the HTTP protocol that, when developed, was meant to allow users to create,
   change, and move documents on a server, typically a web server or web share.
@@ -11,14 +11,14 @@ control "V-76803" do
       WebDAV is not widely used and has serious security concerns because it may
   allow clients to modify unauthorized files on the web server.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000141-WSR-000085"
-  tag "gid": "V-76803"
-  tag "rid": "SV-91499r1_rule"
-  tag "stig_id": "IISW-SI-000217"
-  tag "fix_id": "F-83499r1_fix"
-  tag "cci": ["CCI-000381"]
-  tag "nist": ["CM-7 a", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000141-WSR-000085'
+  tag "gid": 'V-76803'
+  tag "rid": 'SV-91499r1_rule'
+  tag "stig_id": 'IISW-SI-000217'
+  tag "fix_id": 'F-83499r1_fix'
+  tag "cci": ['CCI-000381']
+  tag "nist": ['CM-7 a', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -64,8 +64,8 @@ control "V-76803" do
   WebDAV Publishing feature from the IIS 8.5 web server.
 
   Select \"Apply\" from the \"Actions\" pane."
+
   describe windows_feature('Web-DAV-Publishing') do
     it { should_not be_installed }
   end
 end
-

@@ -1,7 +1,7 @@
-control "V-76891" do
+control 'V-76891' do
   title "The required DoD banner page must be displayed to authenticated users
   accessing a DoD private website."
-  desc  "A consent banner will be in place to make prospective entrants aware
+  desc "A consent banner will be in place to make prospective entrants aware
   that the website they are about to enter is a DoD web site and their activity
   is subject to monitoring. The document, DoDI 8500.01, establishes the policy on
   the use of DoD information systems. It requires the use of a standard Notice
@@ -12,14 +12,14 @@ control "V-76891" do
   be present. A manual check of the document root directory for a banner page
   file (such as banner.html) or navigation to the website via a browser can be
   used to confirm the information provided from interviewing the web staff."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76891"
-  tag "rid": "SV-91587r1_rule"
-  tag "stig_id": "IISW-SI-000264"
-  tag "fix_id": "F-83587r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76891'
+  tag "rid": 'SV-91587r1_rule'
+  tag "stig_id": 'IISW-SI-000264'
+  tag "fix_id": 'F-83587r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -78,8 +78,9 @@ control "V-76891" do
   entry, this is a finding."
   tag "fix": "Configure a DoD private website to display the required DoD
   banner page when authentication is required for user access."
-  describe "Manual review of website is needed" do
-    skip "The required DoD banner page must be displayed to authenticated users
+
+  describe 'Manual review of website is needed' do
+    skip "Manual review that required DoD banner page must is displayed to authenticated users
     accessing a DoD private website"
   end
-end 
+end

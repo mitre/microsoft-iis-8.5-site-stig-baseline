@@ -1,4 +1,4 @@
-control "V-76777" do
+control 'V-76777' do
   title "The IIS 8.5 website session state cookie settings must be configured
   to Use Cookies mode."
   desc  "When the session information is stored on the client, the session ID,
@@ -28,14 +28,14 @@ control "V-76777" do
   because cookies do not require any redirection.
 
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000001-WSR-000002"
-  tag "gid": "V-76777"
-  tag "rid": "SV-91473r2_rule"
-  tag "stig_id": "IISW-SI-000202"
-  tag "fix_id": "F-83473r2_fix"
-  tag "cci": ["CCI-000054"]
-  tag "nist": ["AC-10", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000001-WSR-000002'
+  tag "gid": 'V-76777'
+  tag "rid": 'SV-91473r2_rule'
+  tag "stig_id": 'IISW-SI-000202'
+  tag "fix_id": 'F-83473r2_fix'
+  tag "cci": ['CCI-000054']
+  tag "nist": ['AC-10', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -85,21 +85,24 @@ control "V-76777" do
   drop-dowssn list.
 
   Select \"Apply\" from the \"Actions\" pane."
-  get_cookie_setting = command('Get-WebConfigurationProperty -Filter system.web/sessionState -pspath "IIS:\Sites\*" -name * | select -expand cookieless').stdout.strip.split("\r\n")
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
 
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  get_cookie_setting.zip(get_names).each do |cookie_setting, names|
-    describe "The iss site: #{names} website session state cookie settings" do
-      subject { cookie_setting }
-      it {should cmp "UseCookies"}
+  site_names.each do |site_name|
+    iis_configuration = json(command: "Get-WebConfigurationProperty -Filter system.web/sessionState 'IIS:\\Sites\\#{site_name}'  -Name * | ConvertTo-Json")
+
+    describe "IIS sessionState for site :'#{site_name}'" do
+      subject { iis_configuration }
+      its('cookieless') { should cmp 'UseCookies' }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end
-

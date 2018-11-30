@@ -1,18 +1,18 @@
-control "V-76819" do
+control 'V-76819' do
   title "The IIS 8.5 website must be configured to limit the size of web
   requests."
-  desc  "By setting limits on web requests, it ensures availability of web
+  desc "By setting limits on web requests, it ensures availability of web
   services and mitigates the risk of buffer overflow type attacks. The
   maxAllowedContentLength Request Filter limits the number of bytes the server
   will accept in a request."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000246-WSR-000149"
-  tag "gid": "V-76819"
-  tag "rid": "SV-91515r2_rule"
-  tag "stig_id": "IISW-SI-000226"
-  tag "fix_id": "F-83515r1_fix"
-  tag "cci": ["CCI-001094"]
-  tag "nist": ["SC-5 (1)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000246-WSR-000149'
+  tag "gid": 'V-76819'
+  tag "rid": 'SV-91515r2_rule'
+  tag "stig_id": 'IISW-SI-000226'
+  tag "fix_id": 'F-83515r1_fix'
+  tag "cci": ['CCI-001094']
+  tag "nist": ['SC-5 (1)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -58,13 +58,15 @@ control "V-76819" do
 
     describe "The IIS site: #{n} websites max allowed content length" do
       subject { maxAllowedContentLength }
-      it {should cmp <= 30000000 }
+      it { should cmp <= 30_000_000 }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

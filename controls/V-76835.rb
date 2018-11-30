@@ -1,19 +1,19 @@
-control "V-76835" do
+control 'V-76835' do
   title "Warning and error messages displayed to clients must be modified to
   minimize the identity of the IIS 8.5 website, patches, loaded modules, and
   directory paths."
-  desc  "HTTP error pages contain information that could enable an attacker to
+  desc "HTTP error pages contain information that could enable an attacker to
   gain access to an information system. Failure to prevent the sending of HTTP
   error pages with full information to remote requesters exposes internal
   configuration information to potential attackers."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000266-WSR-000159"
-  tag "gid": "V-76835"
-  tag "rid": "SV-91531r1_rule"
-  tag "stig_id": "IISW-SI-000233"
-  tag "fix_id": "F-83531r1_fix"
-  tag "cci": ["CCI-001312"]
-  tag "nist": ["SI-11 a", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000266-WSR-000159'
+  tag "gid": 'V-76835'
+  tag "rid": 'SV-91531r1_rule'
+  tag "stig_id": 'IISW-SI-000233'
+  tag "fix_id": 'F-83531r1_fix'
+  tag "cci": ['CCI-001312']
+  tag "nist": ['SI-11 a', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -59,13 +59,15 @@ control "V-76835" do
 
     describe "The IIS site: #{n} websites error mode" do
       subject { errorMode }
-      it {should cmp "DetailedLocalOnly"}
+      it { should cmp 'DetailedLocalOnly' }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

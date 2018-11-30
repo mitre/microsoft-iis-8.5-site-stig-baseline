@@ -1,18 +1,18 @@
-control "V-76821" do
-  title "The IIS 8.5 websites Maximum Query String limit must be configured."
+control 'V-76821' do
+  title 'The IIS 8.5 websites Maximum Query String limit must be configured.'
   desc  "By setting limits on web requests, it helps to ensure availability of
   web services and may also help mitigate the risk of buffer overflow type
   attacks. The Maximum Query String Request Filter describes the upper limit on
   allowable query string lengths. Upon exceeding the configured value, IIS will
   generate a Status Code 404.15."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000246-WSR-000149"
-  tag "gid": "V-76821"
-  tag "rid": "SV-91517r1_rule"
-  tag "stig_id": "IISW-SI-000227"
-  tag "fix_id": "F-83517r1_fix"
-  tag "cci": ["CCI-001094"]
-  tag "nist": ["SC-5 (1)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000246-WSR-000149'
+  tag "gid": 'V-76821'
+  tag "rid": 'SV-91517r1_rule'
+  tag "stig_id": 'IISW-SI-000227'
+  tag "fix_id": 'F-83517r1_fix'
+  tag "cci": ['CCI-001094']
+  tag "nist": ['SC-5 (1)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -56,13 +56,15 @@ control "V-76821" do
     n = names.strip
     describe "The IIS site: #{n} websites Maximum Query String limit" do
       subject { maxQueryString }
-      it {should cmp <= 2048 }
+      it { should cmp <= 2048 }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

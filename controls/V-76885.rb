@@ -1,4 +1,4 @@
-control "V-76885" do
+control 'V-76885' do
   title "Interactive scripts on the IIS 8.5 web server must be located in
   unique and designated folders."
   desc  "CGI and ASP scripts represent one of the most common and exploitable
@@ -9,14 +9,14 @@ control "V-76885" do
   into their own unique folders. The placement of CGI, ASP, or equivalent scripts
   to special folders gives the Web Manager or the SA control over what goes into
   those folders and to facilitate access control at the folder level."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000141-WSR-000087"
-  tag "gid": "V-76885"
-  tag "rid": "SV-91581r2_rule"
-  tag "stig_id": "IISW-SI-000261"
-  tag "fix_id": "F-83581r2_fix"
-  tag "cci": ["CCI-000381"]
-  tag "nist": ["CM-7 a", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000141-WSR-000087'
+  tag "gid": 'V-76885'
+  tag "rid": 'SV-91581r2_rule'
+  tag "stig_id": 'IISW-SI-000261'
+  tag "fix_id": 'F-83581r2_fix'
+  tag "cci": ['CCI-000381']
+  tag "nist": ['CM-7 a', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -64,9 +64,8 @@ control "V-76885" do
   Users: READ
   ALL APPLICATION PACKAGES: READ
   "
-  describe "Manual review of website is needed" do
-    skip "Interactive scripts on the IIS 8.5 web server must be located in
-          unique and designated folders"
+  describe 'Manual review of website is needed' do
+    skip "Manually review to confirm that that interactive scripts on the
+    IIS 8.5 web server is located in unique and designated folders"
   end
 end
-

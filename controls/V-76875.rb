@@ -1,17 +1,17 @@
-control "V-76875" do
+control 'V-76875' do
   title "The maximum queue length for HTTP.sys for each IIS 8.5 website must be
   explicitly configured."
-  desc  "In order to determine the possible causes of client connection errors
+  desc "In order to determine the possible causes of client connection errors
   and to conserve system resources, it is important to both log errors and manage
   those settings controlling requests to the application pool."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76875"
-  tag "rid": "SV-91571r1_rule"
-  tag "stig_id": "IISW-SI-000256"
-  tag "fix_id": "F-83571r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76875'
+  tag "rid": 'SV-91571r1_rule'
+  tag "stig_id": 'IISW-SI-000256'
+  tag "fix_id": 'F-83571r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -46,7 +46,6 @@ control "V-76875" do
   1000 or less.
 
   Click OK."
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
   application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
@@ -54,13 +53,15 @@ control "V-76875" do
     iis_configuration = command("Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select queueLength").stdout
     describe "The maximum queue length for IIS Application Pool :'#{application_pool}'" do
       subject { iis_configuration }
-      it { should cmp <= '1000'} 
+      it { should cmp <= '1000' }
     end
   end
   if application_pool_names.empty?
-    describe "There are no IIS application pools configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no application pool configured hence the control is Not-Applicable'
+
+    describe 'No application pool where found to be reviewed' do
+      skip 'No application pool where found to be reviewed'
     end
   end
 end

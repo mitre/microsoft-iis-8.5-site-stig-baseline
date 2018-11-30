@@ -1,16 +1,16 @@
-control "V-76873" do
+control 'V-76873' do
   title "The application pool for each IIS 8.5 website must have a recycle time
   explicitly set."
-  desc  "Application pools can be periodically recycled to avoid unstable
+  desc "Application pools can be periodically recycled to avoid unstable
   states possibly leading to application crashes, hangs, or memory leaks."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76873"
-  tag "rid": "SV-91569r1_rule"
-  tag "stig_id": "IISW-SI-000255"
-  tag "fix_id": "F-83569r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76873'
+  tag "rid": 'SV-91569r1_rule'
+  tag "stig_id": 'IISW-SI-000255'
+  tag "fix_id": 'F-83569r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -58,8 +58,6 @@ control "V-76873" do
   Set both the \"Regular time interval\" and \"Specific time\" options to
   \"True\"."
 
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
-
   application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
   application_pool_names.each do |application_pool|
@@ -72,9 +70,11 @@ control "V-76873" do
     end
   end
   if application_pool_names.empty?
-    describe "There are no IIS application pools configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no application pool configured hence the control is Not-Applicable'
+
+    describe 'No application pool where found to be reviewed' do
+      skip 'No application pool where found to be reviewed'
     end
   end
 end

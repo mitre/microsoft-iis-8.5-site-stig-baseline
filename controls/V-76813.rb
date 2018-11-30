@@ -1,7 +1,7 @@
-control "V-76813" do
+control 'V-76813' do
   title "The IIS 8.5 website must generate unique session identifiers that
   cannot be reliably reproduced."
-  desc  "Communication between a client and the web server is done using the
+  desc "Communication between a client and the web server is done using the
   HTTP protocol, but HTTP is a stateless protocol. In order to maintain a
   connection or session, a web server will generate a session identifier (ID) for
   each client session when the session is initiated. The session ID allows the
@@ -15,20 +15,20 @@ control "V-76813" do
 
     The session ID generator also needs to be a FIPS 140-2-approved generator.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000224-WSR-000136"
-  tag "gid": "V-76813"
-  tag "rid": "SV-91509r1_rule"
-  tag "stig_id": "IISW-SI-000223"
-  tag "fix_id": "F-83509r1_fix"
-  tag "cci": ["CCI-001188"]
-  tag "nist": ["SC-23 (3)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000224-WSR-000136'
+  tag "gid": 'V-76813'
+  tag "rid": 'SV-91509r1_rule'
+  tag "stig_id": 'IISW-SI-000223'
+  tag "fix_id": 'F-83509r1_fix'
+  tag "cci": ['CCI-001188']
+  tag "nist": ['SC-23 (3)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
   tag "mitigations": nil
   tag "severity_override_guidance": false
-  tag "potential_impacts": nil 
+  tag "potential_impacts": nil
   tag "third_party_tools": nil
   tag "mitigation_controls": nil
   tag "responsibility": nil
@@ -71,17 +71,19 @@ control "V-76813" do
   Under \"Session State\" Mode Settings, select the \"In Process\" mode."
   get_mode = command('Get-WebConfigurationProperty -Filter system.web/sessionState -pspath "IIS:\Sites\*" -name * | select -expand mode').stdout.strip.split("\r\n")
   get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  
+
   get_mode.zip(get_names).each do |mode, names|
-    describe "The iss site: #{names} website session state" do
-      subject { mode}
-      it {should eq "InProc"}
+    describe "The IIS site: #{names} website session state" do
+      subject { mode }
+      it { should eq 'InProc' }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

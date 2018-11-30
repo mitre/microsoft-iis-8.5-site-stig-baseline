@@ -1,18 +1,18 @@
-control "V-76829" do
-  title "Directory Browsing on the IIS 8.5 website must be disabled."
+control 'V-76829' do
+  title 'Directory Browsing on the IIS 8.5 website must be disabled.'
   desc  "Directory browsing allows the contents of a directory to be displayed
   upon request from a web client. If directory browsing is enabled for a
   directory in IIS, users could receive a web page listing the contents of the
   directory. If directory browsing is enabled the risk of inadvertently
   disclosing sensitive content is increased."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000251-WSR-000157"
-  tag "gid": "V-76829"
-  tag "rid": "SV-91525r1_rule"
-  tag "stig_id": "IISW-SI-000231"
-  tag "fix_id": "F-83525r1_fix"
-  tag "cci": ["CCI-001310"]
-  tag "nist": ["SI-10", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000251-WSR-000157'
+  tag "gid": 'V-76829'
+  tag "rid": 'SV-91525r1_rule'
+  tag "stig_id": 'IISW-SI-000231'
+  tag "fix_id": 'F-83525r1_fix'
+  tag "cci": ['CCI-001310']
+  tag "nist": ['SI-10', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -54,13 +54,21 @@ control "V-76829" do
 
     describe "The IIS site: #{n} websites enable directory browsing" do
       subject { directory_browsing }
-      it {should cmp 'False'}
+      it { should cmp 'False' }
     end
   end
+
+  if command('Get-WebConfiguration  system.webServer/globalModules/*').stdout.strip.include?('DirectoryListingModule')
+    impact 0.0
+    desc 'Directory Browsing is not installed, hence this control is Not Applicable.'
+  end
+
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

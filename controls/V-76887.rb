@@ -1,7 +1,7 @@
-control "V-76887" do
+control 'V-76887' do
   title "Interactive scripts on the IIS 8.5 web server must have restrictive
   access controls."
-  desc  "CGI is a programming standard for interfacing external applications
+  desc "CGI is a programming standard for interfacing external applications
   with information servers, such as HTTP or web servers. CGI, represented by all
   upper case letters, should not be confused with the .cgi file extension. The
   .cgi file extension does represent a CGI script, but CGI scripts may be written
@@ -15,14 +15,14 @@ control "V-76887" do
   or the Web Manager takes specific measures. CGI programs can access and alter
   data files, launch other programs, and use the network.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000141-WSR-000087"
-  tag "gid": "V-76887"
-  tag "rid": "SV-91583r1_rule"
-  tag "stig_id": "IISW-SI-000262"
-  tag "fix_id": "F-83583r1_fix"
-  tag "cci": ["CCI-000381"]
-  tag "nist": ["CM-7 a", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000141-WSR-000087'
+  tag "gid": 'V-76887'
+  tag "rid": 'SV-91583r1_rule'
+  tag "stig_id": 'IISW-SI-000262'
+  tag "fix_id": 'F-83583r1_fix'
+  tag "cci": ['CCI-000381']
+  tag "nist": ['CM-7 a', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -82,8 +82,8 @@ control "V-76887" do
   ApplicationPoolId: READ
   Custom Service Account: READ
   Users: READ"
- describe "Manual review of website is needed" do
-    skip "Interactive scripts on the IIS 8.5 web server must have restrictive
-         access controls"
+  describe 'Manual review of website is needed' do
+    skip "Manually review to confirm that Interactive scripts on the IIS 8.5 web
+    server has restrictive access controls"
   end
 end

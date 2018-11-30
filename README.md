@@ -11,7 +11,7 @@ InSpec is an open-source run-time framework and rule language used to specify co
 ## Requirements
 
 - [ruby](https://www.ruby-lang.org/en/) version 2.4  or greater
-- [InSpec](http://inspec.io/) version 2.1  or greater
+- [InSpec](http://inspec.io/) version 3.0  or greater
     - Install via ruby gem: `gem install inspec`
 
 ## Usage
@@ -26,6 +26,7 @@ inspec exec https://github.com/aaronlippold/iis-site-baseline/archive/master.tar
 ```
 
 Another option is to download the profile then run it, this allows you to edit specific instructions and view the profile code.
+
 ``` bash
 # Clone Inspec Profile
 $ git clone https://github.com/aaronlippold/iis-site-baseline.git
@@ -37,12 +38,11 @@ $ inspec exec iis-site-baseline --reporter cli json:output.json
 
 # Run profile with custom settings defined in attributes.yml against the target 
 # server example.com. 
-$ inspec exec iis-site-baseline -t ssh://user@password:example.com --attrs attributes.yml --reporter cli json:output.json
+$inspec exec iis-site-baseline -t winrm://$winhostip --user 'Administrator' --password=Pa55w0rd --attrs attributes.yml --reporter cli json:output.json
 
 # Run profile with: custom attributes, ssh keyed into a custom target, and sudo.
 $ inspec exec iis-site-baseline -t ssh://user@hostname -i /path/to/key --sudo --attrs attributes.yml --reporter cli json:output.json
 ```
-
 
 ## Contributors + Kudos
 
@@ -52,8 +52,8 @@ $ inspec exec iis-site-baseline -t ssh://user@hostname -i /path/to/key --sudo --
 ## License and Author
 
 ### Authors
-
-- Author:: Aaron Lippold
+- Rony Xavier
+- Alicia Sturtevant
 
 ### License 
 

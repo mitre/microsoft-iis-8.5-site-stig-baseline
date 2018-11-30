@@ -1,5 +1,5 @@
-control "V-76775" do
-  title "The IIS 8.5 website session state must be enabled."
+control 'V-76775' do
+  title 'The IIS 8.5 website session state must be enabled.'
   desc  "When the session information is stored on the client, the session ID,
   along with the user authorization and identity information, is sent along with
   each client request and is stored in either a cookie, embedded in the uniform
@@ -21,14 +21,14 @@ control "V-76775" do
   provides the ability to persist variable values for the duration of that
   session.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000001-WSR-000002"
-  tag "gid": "V-76775"
-  tag "rid": "SV-91471r1_rule"
-  tag "stig_id": "IISW-SI-000201"
-  tag "fix_id": "F-83471r1_fix"
-  tag "cci": ["CCI-000054"]
-  tag "nist": ["AC-10", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000001-WSR-000002'
+  tag "gid": 'V-76775'
+  tag "rid": 'SV-91471r1_rule'
+  tag "stig_id": 'IISW-SI-000201'
+  tag "fix_id": 'F-83471r1_fix'
+  tag "cci": ['CCI-000054']
+  tag "nist": ['AC-10', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -80,20 +80,23 @@ control "V-76775" do
 
   Select \"Apply\" from the \"Actions\" pane."
 
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  get_mode = command('Get-WebConfigurationProperty -Filter system.web/sessionState -pspath "IIS:\Sites\*" -name * | select -expand mode').stdout.strip.split("\r\n")
-  get_names = command("Get-Website | select name | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  
-  get_mode.zip(get_names).each do |mode, names|
-    describe "The iss site: #{names} website session state" do
-      subject { mode}
-      it {should eq "InProc"}
+  site_names.each do |site_name|
+    iis_configuration = json(command: "Get-WebConfigurationProperty -Filter system.web/sessionState 'IIS:\\Sites\\#{site_name}'  -Name * | ConvertTo-Json")
+
+    describe "IIS sessionState setting for Site :'#{site_name}'" do
+      subject { iis_configuration }
+      its('mode') { should cmp 'InProc' }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
-end 
+end

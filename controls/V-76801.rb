@@ -1,11 +1,4 @@
-APPROVED_FILE_EXTENSIONS= attribute(
-  'approved_file_extensions',
-  description: 'List of approved file extensions',
-  default: [".txt                                                                                                               True"]
-  
-)
-
-control "V-76801" do
+control 'V-76801' do
   title "The IIS 8.5 website must have resource mappings set to disable the
 serving of certain file types."
   desc  "Resource mapping is the process of tying a particular file type to a
@@ -19,14 +12,14 @@ log files, password files, etc.
     The web server must only allow hosted application file types to be served
 to a user and all other types must be disabled.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000141-WSR-000083"
-  tag "gid": "V-76801"
-  tag "rid": "SV-91497r1_rule"
-  tag "stig_id": "IISW-SI-000216"
-  tag "fix_id": "F-83497r1_fix"
-  tag "cci": ["CCI-000381"]
-  tag "nist": ["CM-7 a", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000141-WSR-000083'
+  tag "gid": 'V-76801'
+  tag "rid": 'SV-91497r1_rule'
+  tag "stig_id": 'IISW-SI-000216'
+  tag "fix_id": 'F-83497r1_fix'
+  tag "cci": ['CCI-000381']
+  tag "nist": ['CM-7 a', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -64,28 +57,31 @@ to a user and all other types must be disabled.
   \"True\", remove the file name extension.
 
   Select \"Deny File Name Extension\" from the \"Actions\" pane.
-   
+
   Add each file name extension from the black list.
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  
-  get_names.each do |names|
-    n = names.strip
-    get_request_filtering = command("Get-WebConfigurationProperty -pspath \"IIS:\Sites\\#{n}\" -filter /system.webserver/security/requestFiltering -name * | select -expand fileExtensions | select -expand Collection | select fileExtension, allowed | Findstr /v 'False --- fileExtension'").stdout.strip.split("\n")
-    get_request_filtering.each do |handler|
-      a = handler.strip
-      describe "The iss site: #{n} web allowed file extension: #{a}" do
-        subject { a }
-        it { should be_in APPROVED_FILE_EXTENSIONS}
-      end 
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  black_listed_extensions = attribute('black_listed_extensions')
+
+  site_names.each do |site_name|
+    extensions = command("Get-WebConfigurationProperty -Filter /system.webserver/security/requestFiltering/fileExtensions 'IIS:\\Sites\\#{site_name}'  -Name Collection | where {$_.allowed -eq $true}| select -expand fileExtension").stdout.split
+
+    describe.one do
+      describe "Allowed Request Filtering extensions should not be in black listed extensions; #{extensions}" do
+        subject { extensions }
+        it { should_not be_in black_listed_extensions }
+      end
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

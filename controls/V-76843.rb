@@ -1,7 +1,7 @@
-control "V-76843" do
+control 'V-76843' do
   title "The IIS 8.5 website must provide the capability to immediately
   disconnect or disable remote access to the hosted applications."
-  desc  "During an attack on the web server or any of the hosted applications,
+  desc "During an attack on the web server or any of the hosted applications,
   the system administrator may need to disconnect or disable access by users to
   stop the attack.
 
@@ -17,14 +17,14 @@ control "V-76843" do
   connectivity to any other hosted application if possible and to make certain
   log data is conserved for later forensic analysis.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000316-WSR-000170"
-  tag "gid": "V-76843"
-  tag "rid": "SV-91539r1_rule"
-  tag "stig_id": "IISW-SI-000237"
-  tag "fix_id": "F-83539r1_fix"
-  tag "cci": ["CCI-002322"]
-  tag "nist": ["AC-17 (9)", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000316-WSR-000170'
+  tag "gid": 'V-76843'
+  tag "rid": 'SV-91539r1_rule'
+  tag "stig_id": 'IISW-SI-000237'
+  tag "fix_id": 'F-83539r1_fix'
+  tag "cci": ['CCI-002322']
+  tag "nist": ['AC-17 (9)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -78,9 +78,9 @@ control "V-76843" do
   IIS 8.5 Manager.
 
   In the \"Actions\" pane, under \"Manage Server\", click on \"Stop\"."
- 
+
   describe "The IIS 8.5 website must provide the capability to immediately
   disconnect or disable remote access to the hosted applications" do
-    skip "This is a manual control"
+    skip 'The control should be manually reviewed.'
   end
 end

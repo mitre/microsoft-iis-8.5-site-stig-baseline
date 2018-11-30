@@ -1,5 +1,5 @@
-control "V-76839" do
-  title "The Idle Time-out monitor for each IIS 8.5 website must be enabled."
+control 'V-76839' do
+  title 'The Idle Time-out monitor for each IIS 8.5 website must be enabled.'
   desc  "The idle time-out attribute controls the amount of time a worker
   process will remain idle before it shuts down. A worker process is idle if it
   is not processing requests and no new requests are received.
@@ -11,14 +11,14 @@ control "V-76839" do
   recycle, in which the worker process to be shut down is kept running until
   after a new worker process is started.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000295-WSR-000012"
-  tag "gid": "V-76839"
-  tag "rid": "SV-91535r1_rule"
-  tag "stig_id": "IISW-SI-000235"
-  tag "fix_id": "F-83535r1_fix"
-  tag "cci": ["CCI-002361"]
-  tag "nist": ["AC-12", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000295-WSR-000012'
+  tag "gid": 'V-76839'
+  tag "rid": 'SV-91535r1_rule'
+  tag "stig_id": 'IISW-SI-000235'
+  tag "fix_id": 'F-83535r1_fix'
+  tag "cci": ['CCI-002361']
+  tag "nist": ['AC-12', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -64,13 +64,15 @@ control "V-76839" do
 
     describe "The IIS site: #{n} websites idle monitor time-out" do
       subject { idleTimeout_monitor }
-      it {should cmp <= 20}
+      it { should cmp <= 20 }
     end
   end
   if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

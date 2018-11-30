@@ -1,8 +1,8 @@
-control "V-76789" do
+control 'V-76789' do
   title "The IIS 8.5 website must produce log records that contain sufficient
   information to establish the outcome (success or failure) of IIS 8.5 website
   events."
-  desc  "Web server logging capability is critical for accurate forensic
+  desc "Web server logging capability is critical for accurate forensic
   analysis. Without sufficient and accurate information, a correct replay of the
   events cannot be determined.
 
@@ -23,14 +23,14 @@ control "V-76789" do
   events, success/fail indications, file names involved, access control, or flow
   control rules invoked.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000099-WSR-000061"
-  tag "gid": "V-76789"
-  tag "rid": "SV-91485r1_rule"
-  tag "stig_id": "IISW-SI-000209"
-  tag "fix_id": "F-83485r1_fix"
-  tag "cci": ["CCI-000134"]
-  tag "nist": ["AU-3", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000099-WSR-000061'
+  tag "gid": 'V-76789'
+  tag "rid": 'SV-91485r1_rule'
+  tag "stig_id": 'IISW-SI-000209'
+  tag "fix_id": 'F-83485r1_fix'
+  tag "cci": ['CCI-000134']
+  tag "nist": ['AU-3', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -55,7 +55,7 @@ control "V-76789" do
   Under \"Custom Fields\", verify the following fields are selected:
 
   Request Header >> Connection
-   
+
   Request Header >> Warning
 
   Server Variable >> HTTP_CONNECTION
@@ -83,34 +83,35 @@ control "V-76789" do
   Click \"OK\".
 
   Select \"Apply\" from the \"Actions\" pane."
-  # Get Log Format
-  log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/*/logFile" -name "logFormat"').stdout.strip.split("\r\n")
 
-  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
+  site_names.each do |site_name|
+    iis_logging_configuration = json(command: %(Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter 'System.Applicationhost/Sites/site[@name="#{site_name}"]/logfile'  -Name * | ConvertTo-Json))
 
-  log_format.zip(get_names).each do |format, names|
-    describe "The iss site: #{names} logging format" do
-      subject { format }
-        it { should cmp 'W3C' }
+    describe "IIS Logging configuration for Site :'#{site_name}'" do
+      subject { iis_logging_configuration }
+      its('logFormat') { should cmp 'W3C' }
     end
   end
 
   custom_field_configuration = []
-  get_names.each do |names|
-
-    custom_field_configuration = command("Get-WebConfiguration -filter \"system.applicationHost/sites/site[@name=\'#{names}\']/logFile/customFields/*\"").stdout.strip
-    describe "IIS Custom Fields logging configuration" do
+  site_names.each do |site_name|
+    custom_field_configuration = command("Get-WebConfiguration -filter \"system.applicationHost/sites/site[@name=\'#{site_name}\']/logFile/customFields/*\"").stdout.strip
+    describe "IIS Custom Fields Logging configuration for Site :'#{site_name}'" do
       subject { custom_field_configuration }
-      it { should match /sourceName\s+:\s+Connection\s+sourceType\s+:\s+RequestHeader/}
-      it { should match /sourceName\s+:\s+Warning\s+sourceType\s+:\s+RequestHeader/}
-      it { should match /sourceName\s+:\s+HTTP_CONNECTION\s+sourceType\s+:\s+ServerVariable/}
+      it { should match /sourceName\s+:\s+Connection\s+sourceType\s+:\s+RequestHeader/ }
+      it { should match /sourceName\s+:\s+Warning\s+sourceType\s+:\s+RequestHeader/ }
+      it { should match /sourceName\s+:\s+HTTP_CONNECTION\s+sourceType\s+:\s+ServerVariable/ }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

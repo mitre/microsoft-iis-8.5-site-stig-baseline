@@ -1,14 +1,8 @@
-LOG_FIELDS = attribute(
-    'fields',
-    description: 'List of fields to be included in Web Server Logging Configuration',
-    default: ['UserAgent', 'UserName', 'Referer']
-)
-
-control "V-76791" do
+control 'V-76791' do
   title "The IIS 8.5 website must produce log records containing sufficient
   information to establish the identity of any user/subject or process associated
   with an event."
-  desc  "Web server logging capability is critical for accurate forensic
+  desc "Web server logging capability is critical for accurate forensic
   analysis. Without sufficient and accurate information, a correct replay of the
   events cannot be determined.
 
@@ -22,14 +16,14 @@ control "V-76791" do
   identifiers, event descriptions, success/fail indications, file names involved,
   and access control or flow control rules invoked.
   "
-  impact 0.7
-  tag "gtitle": "SRG-APP-000100-WSR-000064"
-  tag "gid": "V-76791"
-  tag "rid": "SV-91487r1_rule"
-  tag "stig_id": "IISW-SI-000210"
-  tag "fix_id": "F-83487r1_fix"
-  tag "cci": ["CCI-001487"]
-  tag "nist": ["AU-3", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000100-WSR-000064'
+  tag "gid": 'V-76791'
+  tag "rid": 'SV-91487r1_rule'
+  tag "stig_id": 'IISW-SI-000210'
+  tag "fix_id": 'F-83487r1_fix'
+  tag "cci": ['CCI-001487']
+  tag "nist": ['AU-3', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -95,44 +89,37 @@ control "V-76791" do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  
-  get_names = command("Get-Website | select name | findstr /r /v '^$' | findstr /v 'name ---'").stdout.strip.split("\r\n")
-  fields = command('Get-WebConfigurationProperty -filter "system.applicationHost/sites/*/logFile" -name * | select -expand logExtFileFlags').stdout.strip.split("\r\n")
-  field = LOG_FIELDS
+  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
 
-  fields.each do |f|
-    field.zip(get_names).each do |myField, names|
-      describe "The iis site #{names} logging field #{myField}" do
-        subject {myField}
-        it { should be_in f}
-      end
+  site_names.each do |site_name|
+    iis_logging_configuration = json(command: %(Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter 'System.Applicationhost/Sites/site[@name="#{site_name}"]/logfile'  -Name * | ConvertTo-Json))
+
+    describe "IIS Logging configuration for Site :'#{site_name}'" do
+      subject { iis_logging_configuration }
+      its('logFormat') { should cmp 'W3C' }
+      its('logExtFileFlags') { should include 'UserName' }
+      its('logExtFileFlags') { should include 'UserAgent' }
+      its('logExtFileFlags') { should include 'Referer' }
     end
   end
 
-  log_format = command('Get-WebConfigurationProperty -pspath "MACHINE/WEBROOT/APPHOST"  -filter "system.applicationHost/sites/*/logFile" -name "logFormat"').stdout.strip.split("\r\n")
-  
-  log_format.zip(get_names).each do |format, names|
-    describe "The iss site: #{names} logging format" do
-      subject { format }
-        it { should cmp 'W3C' }
-    end
-  end
-
-  custom_field_configuration = []
-  get_names.each do |names|
-
-    custom_field_configuration = command("Get-WebConfiguration -filter \"system.applicationHost/sites/site[@name=\'#{names}\']/logFile/customFields/*\"").stdout.strip
-    describe "IIS Custom Fields logging configuration" do
+  site_names.each do |site_name|
+    custom_field_configuration = command("Get-WebConfiguration -filter \"system.applicationHost/sites/site[@name=\'#{site_name}\']/logFile/customFields/*\"").stdout.strip
+    describe "IIS Custom Fields Logging configuration for Site :'#{site_name}'" do
       subject { custom_field_configuration }
-      it { should match /sourceName\s+:\s+User-Agent\s+sourceType\s+:\s+RequestHeader/}
-      it { should match /sourceName\s+:\s+Authorization\s+sourceType\s+:\s+RequestHeader/}
-      it { should match /sourceName\s+:\s+Content-Type\s+sourceType\s+:\s+ServerVariable/}
+      it { should match /sourceName\s+:\s+User-Agent\s+sourceType\s+:\s+RequestHeader/ }
+      it { should match /sourceName\s+:\s+Authorization\s+sourceType\s+:\s+RequestHeader/ }
+      it { should match /sourceName\s+:\s+Content-Type\s+sourceType\s+:\s+RequestHeader/ }
+      it { should match /sourceName\s+:\s+HTTP_USER_AGENT\s+sourceType\s+:\s+ServerVariable/ }
     end
   end
-  if get_names.empty?
-    describe "There are no IIS sites configured" do
-      impact 0.0
-      skip "Control not applicable"
+
+  if site_names.empty?
+    impact 0.0
+    desc 'There are no IIS sites configured hence the control is Not-Applicable'
+
+    describe 'No sites where found to be reviewed' do
+      skip 'No sites where found to be reviewed'
     end
   end
 end

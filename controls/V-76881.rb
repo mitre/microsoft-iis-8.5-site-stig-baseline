@@ -1,7 +1,7 @@
-control "V-76881" do
+control 'V-76881' do
   title "The application pools rapid fail protection settings for each IIS 8.5
   website must be managed."
-  desc  "Windows Process Activation Service (WAS) manages application pool
+  desc "Windows Process Activation Service (WAS) manages application pool
   configuration and may flag a worker process as unhealthy and shut it down. The
   rapid fail protection must be set to a suitable value. A lack of response from
   the worker process might mean the worker process does not have a thread to
@@ -9,14 +9,14 @@ control "V-76881" do
   ping interval and ping response time may need adjustment to gain access to
   timely information about application pool health without triggering false,
   unhealthy conditions."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76881"
-  tag "rid": "SV-91577r1_rule"
-  tag "stig_id": "IISW-SI-000259"
-  tag "fix_id": "F-83577r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76881'
+  tag "rid": 'SV-91577r1_rule'
+  tag "stig_id": 'IISW-SI-000259'
+  tag "fix_id": 'F-83577r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -54,8 +54,6 @@ control "V-76881" do
 
   Click OK."
 
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
-
   application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
   application_pool_names.each do |application_pool|
@@ -63,13 +61,15 @@ control "V-76881" do
 
     describe "The rapid fail protection total minutes for IIS Application Pool :'#{application_pool}'" do
       subject { iis_configuration }
-      its('TotalMinutes') { should cmp <= 5} 
+      its('TotalMinutes') { should cmp <= 5 }
     end
   end
   if application_pool_names.empty?
-    describe "There are no IIS application pools configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no application pool configured hence the control is Not-Applicable'
+
+    describe 'No application pool where found to be reviewed' do
+      skip 'No application pool where found to be reviewed'
     end
   end
 end

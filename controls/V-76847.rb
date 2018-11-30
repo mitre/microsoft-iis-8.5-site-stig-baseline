@@ -1,37 +1,7 @@
-SITE_NAME= attribute(
-    'site_name',
-    description: 'Name of IIS site',
-    default: ['tt', 'Default']
-)
-
-HTTP_IP= attribute(
-    'http_ip',
-    description: 'IP address used for http',
-    default: ['10.0.2.15', '0.0.0.0']
-)
-
-HTTP_HOSTNAME= attribute(
-    'http_hostname',
-    description: 'Hostname used for http',
-    default: ['local', 'l']
-)
-
-HTTPS_IP= attribute(
-    'https_ip',
-    description: 'IP address used for https',
-    default: ['10.0.2.15', '0.0.0.0']
-)
-
-HTTPS_HOSTNAME= attribute(
-    'https_hostname',
-    description: 'Hostname used for https',
-    default: ['localhttps', 'test']
-)
-
-control "V-76847" do
+control 'V-76847' do
   title "The IIS 8.5 websites must utilize ports, protocols, and services
   according to PPSM guidelines."
-  desc  "Web servers provide numerous processes, features, and functionalities
+  desc "Web servers provide numerous processes, features, and functionalities
   that utilize TCP/IP ports. Some of these processes may be deemed unnecessary or
   too unsecure to run on a production system.
 
@@ -48,15 +18,15 @@ control "V-76847" do
   in accordance with the Network Infrastructure STIG, DoD Instruction 8551.1,
   Ports, Protocols, and Services Management (PPSM), and the associated Ports,
   Protocols, and Services (PPS) Assurance Category Assignments List.
-  " 
-  impact 0.7
-  tag "gtitle": "SRG-APP-000383-WSR-000175"
-  tag "gid": "V-76847"
-  tag "rid": "SV-91543r1_rule"
-  tag "stig_id": "IISW-SI-000239"
-  tag "fix_id": "F-83543r1_fix"
-  tag "cci": ["CCI-001762"]
-  tag "nist": ["CM-7 (1) (b)", "Rev_4"]
+  "
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000383-WSR-000175'
+  tag "gid": 'V-76847'
+  tag "rid": 'SV-91543r1_rule'
+  tag "stig_id": 'IISW-SI-000239'
+  tag "fix_id": 'F-83543r1_fix'
+  tag "cci": ['CCI-001762']
+  tag "nist": ['CM-7 (1) (b)', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -92,15 +62,25 @@ control "V-76847" do
   In the “Action” Pane, click “Bindings\".
 
   Edit to change an existing binding and set the correct ports and protocol."
-  
-  SITE_NAME.zip(HTTP_IP, HTTP_HOSTNAME).each do |site, httpip, httphostname|
-    describe iis_site("#{site}") do
+
+  site_name = attribute('site_name')
+
+  http_ip = attribute('http_ip')
+
+  http_hostname = attribute('http_hostname')
+
+  https_ip = attribute('https_ip')
+
+  https_hostname = attribute('https_hostname')
+
+  site_name.zip(http_ip, http_hostname).each do |site, httpip, httphostname|
+    describe iis_site(site.to_s) do
       it { should exist }
       it { should have_binding("http #{httpip}:80:#{httphostname}") }
     end
   end
-  SITE_NAME.zip(HTTPS_IP, HTTPS_HOSTNAME).each do |site, httpsip, httsphostname|
-    describe iis_site("#{site}") do
+  site_name.zip(https_ip, https_hostname).each do |site, httpsip, httsphostname|
+    describe iis_site(site.to_s) do
       it { should exist }
       it { should have_binding("https #{httpsip}:80:#{httsphostname}") }
     end

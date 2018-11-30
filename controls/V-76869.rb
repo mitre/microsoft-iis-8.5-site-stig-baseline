@@ -1,7 +1,7 @@
-control "V-76869" do
+control 'V-76869' do
   title "The amount of virtual memory an application pool uses for each IIS 8.5
   website must be explicitly set."
-  desc  "IIS application pools can be periodically recycled to avoid unstable
+  desc "IIS application pools can be periodically recycled to avoid unstable
   states possibly leading to application crashes, hangs, or memory leaks. By
   default, application pool recycling is overlapped, which means the worker
   process to be shut down is kept running until after a new worker process is
@@ -9,14 +9,14 @@ control "V-76869" do
   old worker process shuts down after it finishes processing its existing
   requests, or after a configured time-out, whichever comes first. This way of
   recycling ensures uninterrupted service to clients."
-  impact 0.7
-  tag "gtitle": "SRG-APP-000516-WSR-000174"
-  tag "gid": "V-76869"
-  tag "rid": "SV-91565r2_rule"
-  tag "stig_id": "IISW-SI-000253"
-  tag "fix_id": "F-83565r1_fix"
-  tag "cci": ["CCI-000366"]
-  tag "nist": ["CM-6 b", "Rev_4"]
+  impact 0.5
+  tag "gtitle": 'SRG-APP-000516-WSR-000174'
+  tag "gid": 'V-76869'
+  tag "rid": 'SV-91565r2_rule'
+  tag "stig_id": 'IISW-SI-000253'
+  tag "fix_id": 'F-83565r1_fix'
+  tag "cci": ['CCI-000366']
+  tag "nist": ['CM-6 b', 'Rev_4']
   tag "false_negatives": nil
   tag "false_positives": nil
   tag "documentable": false
@@ -64,8 +64,6 @@ control "V-76869" do
 
   Click OK."
 
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
-
   application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
 
   application_pool_names.each do |application_pool|
@@ -77,9 +75,11 @@ control "V-76869" do
     end
   end
   if application_pool_names.empty?
-    describe "There are no IIS application pools configured" do
-      impact 0.0
-      skip "Control not applicable"
+    impact 0.0
+    desc 'There are no application pool configured hence the control is Not-Applicable'
+
+    describe 'No application pool where found to be reviewed' do
+      skip 'No application pool where found to be reviewed'
     end
   end
 end
