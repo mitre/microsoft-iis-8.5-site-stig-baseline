@@ -59,7 +59,7 @@ control 'V-76883' do
       it { should_not eq '' }
     end
   end
-  if site_names.empty?
+  if get_names.empty?
     impact 0.0
     desc 'There are no IIS sites configured hence the control is Not-Applicable'
 
