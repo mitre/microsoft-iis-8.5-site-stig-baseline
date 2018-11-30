@@ -93,23 +93,23 @@ control 'V-76797' do
 
     csh_files = command("Get-WebConfiguration -pspath \"IIS:\Sites\\#{n}\" -filter \"system.webServer/staticContent/mimeMap\" | ? {$_.fileextension -eq '.csh'}").stdout
 
-    describe "The iss site: #{n} MIME .exe files found" do
+    describe "The IIS Site: #{n} MIME .exe files found" do
       subject { exe_files }
       it { should be_empty }
     end
-    describe "The iss site: #{n}  MIME .dll files found" do
+    describe "The IIS Site: #{n}  MIME .dll files found" do
       subject { dll_files }
       it { should be_empty }
     end
-    describe "The iss site: #{n} MIME .com files found" do
+    describe "The IIS Site: #{n} MIME .com files found" do
       subject { com_files }
       it { should be_empty }
     end
-    describe "The iss site: #{n} .bat files found" do
+    describe "The IIS Site: #{n} .bat files found" do
       subject { bat_files }
       it { should be_empty }
     end
-    describe "The iss site: #{n} MIME .csh files found" do
+    describe "The IIS Site: #{n} MIME .csh files found" do
       subject { csh_files }
       it { should be_empty }
     end
