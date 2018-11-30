@@ -64,7 +64,7 @@ control "V-76871" do
   application_pool_names.each do |application_pool|
     iis_configuration = json(command: "Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select -expand recycling | select -expand periodicRestart | ConvertTo-Json")
 
-    describe "The amount of private memory for IIS Application Pool :'#{application_pool}' uses" do
+    describe "The amount of private memory for IIS Application Pool :'#{application_pool}'" do
       subject { iis_configuration }
       its('privateMemory') { should_not cmp 0 }
     end
