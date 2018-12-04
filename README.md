@@ -1,4 +1,4 @@
-# iis_site_baseline
+# microsoft-iis-8.5-site-stig-baseline
 
 InSpec profile testing secure configuration of Internet Information Server Site version 8.5.
 
