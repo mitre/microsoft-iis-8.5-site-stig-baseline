@@ -82,7 +82,7 @@ control 'V-76847' do
   site_name.zip(https_ip, https_hostname).each do |site, httpsip, httsphostname|
     describe iis_site(site.to_s) do
       it { should exist }
-      it { should have_binding("https #{httpsip}:80:#{httsphostname}") }
+      it { should have_binding("https #{httpsip}:443:#{httsphostname}") }
     end
   end
 end
