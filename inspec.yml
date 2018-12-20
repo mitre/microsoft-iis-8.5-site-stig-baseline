@@ -1,7 +1,7 @@
-name: IIS 8.5 Site Security Technical Implementation Guide
+name: microsoft-iis-8.5-site-stig-baseline
 title: IIS 8.5 Site Security Technical Implementation Guide
-maintainer: MITRE InSpec Team
-copyright: MITRE, 2018
+maintainer: The MITRE Corporation
+copyright: (c) 2018 The MITRE Corporation
 copyright_email: inspec@mitre.org
 license: Apache-2.0
 Description: This Security Technical Implementation Guide is published as a tool to improvethe security of Department of Defense (DoD) information systems. 
