@@ -58,7 +58,7 @@ control 'V-76781' do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  site_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
 
   site_names.each do |site_name|
     iis_configuration = json(command: "Get-WebConfigurationProperty -Filter system.webServer/security/access 'IIS:\\Sites\\#{site_name}'  -Name * | ConvertTo-Json")

@@ -64,7 +64,7 @@ control 'V-76795' do
 
   get_log_directory = command("Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST'  -filter 'system.applicationHost/sites/*/logFile' -name * | select -expand directory").stdout.strip.split("\r\n")
 
-  get_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  get_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
 
   get_log_directory.zip(get_names).each do |log_dir, names|
     system_drive = command('$env:SystemDrive').stdout.strip

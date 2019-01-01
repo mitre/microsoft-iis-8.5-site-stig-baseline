@@ -86,7 +86,7 @@ control 'V-76861' do
 
   Select \"Require SSL\" check box."
 
-  get_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  get_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
 
   get_names.each do |site_name|
     iis_configuration = json(command: "Get-WebConfigurationProperty -Filter system.webServer/security/access 'IIS:\\Sites\\#{site_name}'  -Name * | ConvertTo-Json")

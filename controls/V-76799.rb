@@ -58,7 +58,7 @@ control 'V-76799' do
     extensions from the black list are enabled, this is a finding."'
   end
 
-  get_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  get_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
   if get_names.empty?
     impact 0.0
     desc 'There are no IIS sites configured hence the control is Not-Applicable'

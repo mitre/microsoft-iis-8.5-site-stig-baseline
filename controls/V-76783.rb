@@ -72,7 +72,7 @@ control 'V-76783' do
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  site_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
 
   site_names.each do |site_name|
     iis_logging_configuration = json(command: %(Get-WebConfigurationProperty -pspath 'MACHINE/WEBROOT/APPHOST' -filter 'System.Applicationhost/Sites/site[@name="#{site_name}"]/logfile'  -Name * | ConvertTo-Json))
