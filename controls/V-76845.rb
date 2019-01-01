@@ -71,7 +71,7 @@ control 'V-76845' do
 
   log_directory_path = attribute('log_directory')
 
-  get_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  get_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
 
   system_drive = command('$env:SystemDrive').stdout.strip
 

@@ -62,7 +62,7 @@ to a user and all other types must be disabled.
 
   Select \"Apply\" from the \"Actions\" pane."
 
-  site_names = json(command: 'Get-Website | select -expand name | ConvertTo-Json').params
+  site_names = json(command: 'ConvertTo-Json @(Get-Website | select -expand name)').params
   black_listed_extensions = attribute('black_listed_extensions')
 
   site_names.each do |site_name|

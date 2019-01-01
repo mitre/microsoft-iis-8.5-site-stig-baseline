@@ -47,7 +47,7 @@ control 'V-76875' do
 
   Click OK."
 
-  application_pool_names = json(command: 'Get-ChildItem -Path IIS:\AppPools | select -expand name | ConvertTo-Json').params
+  application_pool_names = json(command: 'ConvertTo-Json @(Get-ChildItem -Path IIS:\AppPools | select -expand name)').params
 
   application_pool_names.each do |application_pool|
     iis_configuration = command("Get-ItemProperty 'IIS:\\AppPools\\#{application_pool}' -name * | select queueLength").stdout
