@@ -39,9 +39,6 @@ $ inspec exec iis-site-baseline --reporter cli json:output.json
 # Run profile with custom settings defined in attributes.yml against the target 
 # server example.com. 
 $inspec exec iis-site-baseline -t winrm://$winhostip --user 'Administrator' --password=Pa55w0rd --attrs attributes.yml --reporter cli json:output.json
-
-# Run profile with: custom attributes, ssh keyed into a custom target, and sudo.
-$ inspec exec iis-site-baseline -t ssh://user@hostname -i /path/to/key --sudo --attrs attributes.yml --reporter cli json:output.json
 ```
 
 ## Contributors + Kudos
