@@ -1,6 +1,6 @@
 # microsoft-iis-8.5-site-stig-baseline
 
-InSpec profile testing secure configuration of Internet Information Server Site version 8.5.
+InSpec Profile to validate the secure configuration of Microsoft IIS 8.5 Site against the [Microsoft IIS 8.5 Site STIG - Ver 1, Rel 5](https://iasecontent.disa.mil/stigs/zip/U_MS_IIS_8-5_Site_V1R5_STIG.zip).
 
 ## Description
 
