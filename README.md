@@ -14,7 +14,9 @@ Latest versions and installation options are available at the [InSpec](http://in
 
     inspec exec https://github.com/mitre/microsoft-iis-8.5-site-stig-baseline/archive/master.tar.gz -t winrm://<hostip> --user '<admin-account>' --password=<password> --reporter cli json:<filename>.json
 
-Runs this profile over winrm to the host at IP address <hostip> as a privileged user account (i.e., an account with administrative privileges), reporting results to both the command line interface (cli) and to a machine-readable JSON file. The following is an example of using this command. 
+Runs this profile over winrm to the host at IP address <hostip> as a privileged user account (i.e., an account with administrative privileges), reporting results to both the command line interface (cli) and to a machine-readable JSON file. 
+    
+The following is an example of using this command. 
 
     inspec exec https://github.com/mitre/stig-microsoft-iis-8.5-site-baseline/archive/master.tar.gz -t winrm://$winhostip --user 'Administrator' --password=Pa55w0rd --reporter cli json:my-iis-site.json
 
