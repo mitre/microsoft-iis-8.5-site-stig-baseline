@@ -1,3 +1,4 @@
+# Release Review
 | Check          | Sub-check                                                                         | Who | Completion Date | Issue #'s |
 |----------------|-----------------------------------------------------------------------------------|-----|-----------------|-----------|
 |Logical checks| Proper profile directory structure							|Eugene Aronne|11/26/2018|*|
@@ -20,7 +21,7 @@ Note
 -------------------------------------------------------------------------------
 *** A completion date is entered in a row when all non-enhancement issues are resolved for that review row.
 
-### Progress report
+# Progress report
 
 |Control|Auto/Manual|Describe|in-progress|Review-RDY|Reviewed|Tested|Automated Unit Tests|
 |--------|----------|----------|----------|----------|----------|----------|------------|
@@ -82,6 +83,7 @@ Note
 
 
 Legend
+-------------------------------------------------------------------------------
 - Describe: Control has been evaluated and categorized as candidate for automated tests. Describe block has been written.
 - Auto/Manual: Control has been evaluated and categorized as candidate for type that needs a manual review. Describe block has been written.
 - Awaiting Review: Control is ready for peer review.
