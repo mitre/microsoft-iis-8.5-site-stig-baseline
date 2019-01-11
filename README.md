@@ -2,44 +2,29 @@
 
 InSpec Profile to validate the secure configuration of Microsoft IIS 8.5 Site against the [Microsoft IIS 8.5 Site STIG - Ver 1, Rel 5](https://iasecontent.disa.mil/stigs/zip/U_MS_IIS_8-5_Site_V1R5_STIG.zip).
 
-## Description
 
-This InSpec compliance profile is a collection of automated tests for secure configuration of IIS Site 8.5 .
+## Getting Started  
+It is intended and recommended that InSpec run this profile from a __"runner"__ host (such as a DevOps orchestration server, an administrative management system, or a developer's workstation/laptop) against the target remotely over __winrm__.
 
-InSpec is an open-source run-time framework and rule language used to specify compliance, security, and policy requirements for testing any node in your infrastructure.
+__For the best security of the runner, always install on the runner the _latest version_ of InSpec and supporting Ruby language components.__ 
 
-## Requirements
+Latest versions and installation options are available at the [InSpec](http://inspec.io/) site.
 
-- [ruby](https://www.ruby-lang.org/en/) version 2.4  or greater
-- [InSpec](http://inspec.io/) version 3.0  or greater
-    - Install via ruby gem: `gem install inspec`
+## Running This Profile
 
-## Usage
-InSpec makes it easy to run tests wherever you need. More options listed here: [InSpec cli](http://inspec.io/docs/reference/cli/)
+    inspec exec https://github.com/mitre/microsoft-iis-8.5-site-stig-baseline/archive/master.tar.gz -t winrm://<hostip> --user '<admin-account>' --password=<password> --reporter cli json:<filename>.json
 
-### Run with remote profile:
-You may choose to run the profile via a remote url, this has the advantage of always being up to date.
-The disadvantage is you may wish to modify controls, which is only possible when downloaded.
-Also, the remote profile is unintuitive for passing in attributes, which modify the default values of the profile.
-``` bash
-inspec exec https://github.com/aaronlippold/iis-site-baseline/archive/master.tar.gz
-```
+Runs this profile over winrm to the host at IP address <hostip> as a privileged user account (i.e., an account with administrative privileges), reporting results to both the command line interface (cli) and to a machine-readable JSON file. 
 
-Another option is to download the profile then run it, this allows you to edit specific instructions and view the profile code.
+    NOTE: Provide a usable example based on instructions above. 
+    Example:
+    inspec exec https://github.com/mitre/stig-microsoft-iis-8.5-site-baseline/archive/master.tar.gz -t winrm://$winhostip --user 'Administrator --password=Pa55w0rd --reporter cli json:my-iis-site.json
 
-``` bash
-# Clone Inspec Profile
-$ git clone https://github.com/aaronlippold/iis-site-baseline.git
+## Viewing the JSON Results
 
-# Run profile locally (assuming you have not changed directories since cloning)
-# This will display compliance level at the prompt, and generate a JSON file 
-# for export called output.json
-$ inspec exec iis-site-baseline --reporter cli json:output.json
+The JSON results output file can be loaded into __[heimdall-lite](https://mitre.github.io/heimdall-lite/)__ for a user-interactive, graphical view of the InSpec results. 
 
-# Run profile with custom settings defined in attributes.yml against the target 
-# server example.com. 
-$inspec exec iis-site-baseline -t winrm://$winhostip --user 'Administrator' --password=Pa55w0rd --attrs attributes.yml --reporter cli json:output.json
-```
+The JSON InSpec results file may also be loaded into a __full heimdall server__, allowing for additional functionality such as to store and compare multiple profile runs.
 
 ## Contributors + Kudos
 
