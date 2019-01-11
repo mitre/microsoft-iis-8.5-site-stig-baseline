@@ -1,7 +1,6 @@
 # microsoft-iis-8.5-site-stig-baseline
 
-InSpec Profile to validate the secure configuration of Microsoft IIS 8.5 Site against the [Microsoft IIS 8.5 Site STIG - Ver 1, Rel 5](https://iasecontent.disa.mil/stigs/zip/U_MS_IIS_8-5_Site_V1R5_STIG.zip).
-
+InSpec Profile to validate the secure configuration of Microsoft IIS 8.5 Site against the [Microsoft IIS 8.5 Site STIG - Ver 1, Rel 5](https://iase.disa.mil/stigs/Pages/index.aspx).
 
 ## Getting Started  
 It is intended and recommended that InSpec run this profile from a __"runner"__ host (such as a DevOps orchestration server, an administrative management system, or a developer's workstation/laptop) against the target remotely over __winrm__.
