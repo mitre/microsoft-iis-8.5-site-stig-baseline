@@ -18,7 +18,7 @@ Runs this profile over winrm to the host at IP address <hostip> as a privileged 
 
     NOTE: Provide a usable example based on instructions above. 
     Example:
-    inspec exec https://github.com/mitre/stig-microsoft-iis-8.5-site-baseline/archive/master.tar.gz -t winrm://$winhostip --user 'Administrator --password=Pa55w0rd --reporter cli json:my-iis-site.json
+    inspec exec https://github.com/mitre/stig-microsoft-iis-8.5-site-baseline/archive/master.tar.gz -t winrm://$winhostip --user 'Administrator' --password=Pa55w0rd --reporter cli json:my-iis-site.json
 
 ## Viewing the JSON Results
 
@@ -26,18 +26,16 @@ The JSON results output file can be loaded into __[heimdall-lite](https://mitre.
 
 The JSON InSpec results file may also be loaded into a __full heimdall server__, allowing for additional functionality such as to store and compare multiple profile runs.
 
-## Contributors + Kudos
+## Authors
+- Rony Xavier
+- Alicia Sturtevant
+
+## Special Thanks
 
 - Aaron Lippold
 - The MITRE InSpec Team
 
-## License and Author
-
-### Authors
-- Rony Xavier
-- Alicia Sturtevant
-
-### License 
+## License 
 
 * This project is licensed under the terms of the Apache license 2.0 (apache-2.0)
 
