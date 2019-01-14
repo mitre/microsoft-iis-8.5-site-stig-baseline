@@ -37,7 +37,9 @@ control 'V-76827' do
 
   Click Edit Feature Settings in the \"Actions\" pane.
 
-  If \"Allow unlisted file extensions\" check box is checked, this is a finding."
+  If \"Allow unlisted file name extensions\" check box is checked, this is a
+
+  finding."
   tag "fix": "Follow the procedures below for each site hosted on the IIS 8.5
   web server:
 
