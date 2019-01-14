@@ -68,11 +68,9 @@ to a user and all other types must be disabled.
   site_names.each do |site_name|
     extensions = command("Get-WebConfigurationProperty -Filter /system.webserver/security/requestFiltering/fileExtensions 'IIS:\\Sites\\#{site_name}'  -Name Collection | where {$_.allowed -eq $true}| select -expand fileExtension").stdout.split
 
-    describe.one do
-      describe "Allowed Request Filtering extensions should not be in black listed extensions; #{extensions}" do
-        subject { extensions }
-        it { should_not be_in black_listed_extensions }
-      end
+    describe "Allowed Request Filtering extensions should not be in black listed extensions; #{extensions}" do
+      subject { extensions }
+      it { should_not be_in black_listed_extensions }
     end
   end
 
