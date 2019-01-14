@@ -59,7 +59,11 @@ each event the client source of the event.
   verify entries do not reflect the IP address of the proxy server.
 
   If the log entries in the log file(s) reflect the IP address of the proxy
-  server as the source, this is a finding."
+  server as the source, this is a finding.
+
+  If the website is not behind a load balancer or proxy server, this is
+  Not Applicable.
+  "
   tag "fix": "Access the proxy server through which inbound web traffic is
   passed and configure settings to pass web traffic to the IIS 8.5 web server
   transparently."

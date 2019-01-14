@@ -36,22 +36,28 @@ control 'V-76811' do
 
   If Anonymous access is disabled, this is Not a Finding.
 
-  If enabled, click Anonymous Authentication and then click Edit in the
-  \"Actions\" pane.
+  If Anonymous access is enabled, click “Anonymous Authentication”.
 
-  If the Specific user radio button is enabled and an ID is specified in the
-  adjacent control box, this is the ID being used for anonymous access.
+  Click 'Edit' in the 'Actions' pane.
 
-  Check privileged groups that may allow the anonymous account inappropriate
-  membership.
+  If the “Specific user” radio button is enabled and an ID is specified in the 
+  adjacent control box, this is the ID being used for anonymous access. 
 
-  Click Start and then double-click Server Manager.
+  Note: account name.
 
-  Expand Configuration; expand Local Users and Groups; and then click Groups.
+  Check privileged groups that may allow the anonymous account inappropriate 
+  membership:
 
-  Review group members.
+  Open “Server Manager” on the machine.
 
-  Privileged Groups:
+  Expand Configuration.
+
+  Expand Local Users and Groups.
+
+  Click “Groups”.
+
+  Review members of any of the following privileged groups:
+
   Administrators
   Backup Operators
   Certificate Services (of any designation)
