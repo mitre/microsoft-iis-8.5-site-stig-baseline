@@ -6,7 +6,7 @@ copyright_email: inspec@mitre.org
 license: Apache-2.0
 Description: This Security Technical Implementation Guide is published as a tool to improvethe security of Department of Defense (DoD) information systems. 
 version: 0.1.0
-
+inspec_version: ">= 4.0"
 
 attributes:
   - name: public_server
