@@ -1,6 +1,6 @@
 # Microsoft IIS 8.5 Site Security Technical Implementation Guide
 This InSpec Profile was created to facilitate testing and auditing of `Microsoft IIS 8.5 Site`
-infrastructure and applications when validating compliancy with Department of [Defense (DoD) STIG](https://iase.disa.mil/stigs/)
+infrastructure and applications when validating compliancy with [Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)
 requirements
 
 - Profile Version: 2.9.1
