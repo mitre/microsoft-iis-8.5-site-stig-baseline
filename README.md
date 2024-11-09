@@ -3,7 +3,7 @@ This InSpec Profile was created to facilitate testing and auditing of `Microsoft
 infrastructure and applications when validating compliancy with Department of [Defense (DoD) STIG](https://iase.disa.mil/stigs/)
 requirements
 
-- Profile Version: 2.9.0
+- Profile Version: 2.9.1
 - STIG Date:  25 Oct 2023    
 - STIG Version: Version 2 Release 9 (V2R9)
 
@@ -22,16 +22,22 @@ and Continuous Authority to Operate (cATO) processes.
 
 Table of Contents
 =================
-* [STIG Information](#stig-information)
-* [Getting Started](#getting-started)
-    * [Intended Usage](#intended-usage)
-    * [Tailoring to Your Environment](#tailoring-to-your-environment)
-    * [Testing the Profile Controls](#testing-the-profile-controls)
-* [Running the Profile](#running-the-profile)
-    * [Directly from Github](#directly-from-github) 
-    * [Using a local Archive copy](#using-a-local-archive-copy)
-    * [Different Run Options](#different-run-options)
-* [Using Heimdall for Viewing Test Results](#using-heimdall-for-viewing-test-results)
+- [Microsoft IIS 8.5 Site Security Technical Implementation Guide](#microsoft-iis-85-site-security-technical-implementation-guide)
+- [Table of Contents](#table-of-contents)
+  - [STIG Information](#stig-information)
+  - [Getting Started](#getting-started)
+    - [Intended Usage](#intended-usage)
+    - [Tailoring to Your Environment](#tailoring-to-your-environment)
+    - [Testing the Profile Controls](#testing-the-profile-controls)
+      - [Requirements](#requirements)
+      - [Testing Commands](#testing-commands)
+  - [Running the Profile](#running-the-profile)
+    - [Directly from Github](#directly-from-github)
+    - [Using a local Archive copy](#using-a-local-archive-copy)
+  - [Different Run Options](#different-run-options)
+  - [Using Heimdall for Viewing Test Results](#using-heimdall-for-viewing-test-results)
+  - [Authors](#authors)
+  - [NOTICE](#notice)
 
 ## STIG Information
 The DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set

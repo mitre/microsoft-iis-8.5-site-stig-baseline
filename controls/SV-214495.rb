@@ -37,11 +37,11 @@ If files with these extensions are found, this is a finding.'
   tag 'check'
   tag 'fix'
 
-  iis_modules = command('Get-WebConfiguration  system.webServer/globalModules/*').stdout.strip
+  iis_modules = command('Get-WebConfiguration system.webServer/globalModules/*').stdout.strip
 
-  unless iis_modules.include?('CgiMowdule')
+  unless iis_modules.include?('CgiModule')
     impact 0.0
-    desc 'CgiMowdule not installed hence the control not applicable'
+    desc 'CgiModule not installed hence the control not applicable'
   end
 
   describe 'Manual review of website is needed' do
