@@ -3,9 +3,9 @@ This InSpec Profile was created to facilitate testing and auditing of `Microsoft
 infrastructure and applications when validating compliancy with [Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)
 requirements
 
-- Profile Version: 2.9.1
-- STIG Date:  25 Oct 2023    
-- STIG Version: Version 2 Release 9 (V2R9)
+- Profile Version: **2.9.1**
+- STIG Date:  **25 Oct 2023**
+- STIG Version: **Version 2 Release 9 (V2R9)**
 
 
 This profile was developed to reduce the time it takes to perform a security checks based upon the
