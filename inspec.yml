@@ -13,11 +13,13 @@ depends: []
 inspec_version: "~>6.0"
 
 inputs:
+  # SV-214446, SV-214460
   - name: public_server
     description: 'Specify if the server being reviewed is a public IIS 8.5 web server'
     type: boolean
     value: false
 
+  # SV-214447
   - name: private_server
     description: 'Specify if the server being reviewed is a private IIS 8.5 web server'
     type: boolean
@@ -29,36 +31,43 @@ inputs:
     type: boolean
     value: false
 
+  # SV-214456
   - name: black_listed_extensions
     description: 'List of Request Filtering black listed extensions'
     type: array
     value: []
 
+  # SV-214459, SV-214478
   - name: site_name
     description: 'Name of IIS site'
     type: array
     value: ['tt', 'Default']
 
+  # SV-214459, SV-214478
   - name: http_ip
     description: 'IP address used for http'
     type: array
     value: ['10.0.2.15', '0.0.0.0']
 
+  # SV-214459, SV-214478
   - name: http_hostname
     description: 'IP address used for https'
     type: array
     value: ['local', 'l']
-    
+  
+  # SV-214459, SV-214478
   - name: https_ip
     description: 'IP address used for https'
     type: array
     value: ['10.0.2.15', '0.0.0.0']
 
+  # SV-214459, SV-214478
   - name: https_hostname
     description: 'Hostname used for https'
     type: array
     value: ['localhttps', 'localhttps2']
 
+  # SV-214477
   - name: log_directory
     description: 'Path of IIS log directory'
     type: string
