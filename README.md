@@ -4,13 +4,12 @@ infrastructure and applications when validating compliancy with [Department of D
 requirements
 
 - Profile Version: **2.9.1**
-- STIG Date:  **25 Oct 2023**
-- STIG Version: **Version 2 Release 9 (V2R9)**
+- Benchmark Date: **25 Oct 2023**
+- Benchmark Version: **Version 2 Release 9 (V2R9)**
 
 
 This profile was developed to reduce the time it takes to perform a security checks based upon the
-STIG Guidance from the Defense Information Systems Agency (DISA) in partnership between the DISA
-Services Directorate (SD) and the DISA Risk Management Executive (RME) office.
+STIG Guidance from the Defense Information Systems Agency (DISA) in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office.
 
 The results of a profile run will provide information needed to support an Authority to Operate (ATO)
 decision for the applicable technology.
@@ -22,26 +21,19 @@ and Continuous Authority to Operate (cATO) processes.
 
 Table of Contents
 =================
-- [Microsoft IIS 8.5 Site Security Technical Implementation Guide](#microsoft-iis-85-site-security-technical-implementation-guide)
-- [Table of Contents](#table-of-contents)
-  - [STIG Information](#stig-information)
-  - [Getting Started](#getting-started)
-    - [Intended Usage](#intended-usage)
-    - [Tailoring to Your Environment](#tailoring-to-your-environment)
-    - [Testing the Profile Controls](#testing-the-profile-controls)
-      - [Requirements](#requirements)
-      - [Testing Commands](#testing-commands)
-  - [Running the Profile](#running-the-profile)
-    - [Directly from Github](#directly-from-github)
-    - [Using a local Archive copy](#using-a-local-archive-copy)
-  - [Different Run Options](#different-run-options)
-  - [Using Heimdall for Viewing Test Results](#using-heimdall-for-viewing-test-results)
-  - [Authors](#authors)
-  - [NOTICE](#notice)
+* [STIG Benchmark  Information](#benchmark-information)
+* [Getting Started](#getting-started)
+    * [Intended Usage](#intended-usage)
+    * [Tailoring to Your Environment](#tailoring-to-your-environment)
+    * [Testing the Profile Controls](#testing-the-profile-controls)
+* [Running the Profile](#running-the-profile)
+    * [Directly from Github](#directly-from-github) 
+    * [Using a local Archive copy](#using-a-local-archive-copy)
+    * [Different Run Options](#different-run-options)
+* [Using Heimdall for Viewing Test Results](#using-heimdall-for-viewing-test-results)
 
-## STIG Information
-The DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set
-of Security Technical Implementation Guides for applications, computer systems and networks
+## Benchmark Information
+The DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set of Security Technical Implementation Guides for applications, computer systems and networks
 connected to the Department of Defense (DoD). These guidelines are the primary security standards
 used by the DoD agencies. In addition to defining security guidelines, the STIGs also stipulate
 how security training should proceed and when security checks should occur. Organizations must
@@ -59,14 +51,37 @@ to enhance their security posture and can be tailored easily for use in your org
 
 [top](#table-of-contents)
 ## Getting Started  
-It is intended and recommended that InSpec run this profile from a __"runner"__ host
+### InSpec (CINC-auditor) setup
+For maximum flexibility/accessibility `cinc-auditor`, the open-source packaged binary version of Chef InSpec should be used,
+compiled by the CINC (CINC Is Not Chef) project in coordination with Chef using Chef's always-open-source InSpec source code.
+For more information see [CINC Home](https://cinc.sh/)
+
+It is intended and recommended that CINC-auditor and this profile executed from a __"runner"__ host
 (such as a DevOps orchestration server, an administrative management system, or a developer's workstation/laptop)
-against the target remotely over __winrm__.
+against the target. This can be any Unix/Linux/MacOS or Windows runner host, with access to the Internet.
 
-__For the best security of the runner, always install the _latest version_ of InSpec on the runner
-    and supporting Ruby language components.__ 
+<h4>
 
-The latest versions and installation options are available at the [InSpec](http://inspec.io/) site.
+> [!TIP]
+> **For the best security of the runner, always install on the runner the latest version of CINC-auditor and any other supporting language components.**
+</h4>
+
+To install CINC-auditor on a UNIX/Linux/MacOS platform use the following command:
+```bash
+curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+```
+
+To install CINC-auditor on a Windows platform (Powershell) use the following command:
+```powershell
+. { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
+```
+
+To confirm successful install of cinc-auditor:
+```
+cinc-auditor -v
+```
+
+Latest versions and other installation options are available at [CINC Auditor](https://cinc.sh/start/auditor/) site.
 
 [top](#table-of-contents)
 ### Intended Usage
@@ -80,41 +95,72 @@ The latest versions and installation options are available at the [InSpec](http:
 
 [top](#table-of-contents)
 ### Tailoring to Your Environment
-The `inspec.yml` file contains metadata that describes the profile.
+This profile uses InSpec Inputs providing flexibility during testing. Inputs allow for
+customize the behavior of Chef InSpec profiles.
 
-***[Update the `inspec.yml` file parameter `inputs` with a list of inputs appropriate
- for the profile and specific environment. Also update the inspec_version to the required version]***
+InSpec Inputs are defined in the `inspec.yml` file. The `inputs` configured in this
+file are **profile definition and defaults for the profile** extracted from the profile
+guidances and contain metadata that describes the profile, and shouldn't be modified.
+
+InSpec provides several methods for customizing profiles behaviors at run-time that does not require
+modifying the `inspec.yml` file itself (see [Using Customized Inputs](#using-customized-inputs)).
+
+The following inputs are permitted to be configured in an inputs `.yml` file (often named inputs.yml)
+for the profile to run correctly on a specific environment, while still complying with the security
+guidance document intent. This is important to prevent confusion when test results are passed downstream
+to different stakeholders under the *security guidance name used by this profile repository*
+
+For changes beyond the inputs cited in this section, users can create an *organizationally-named overlay repository*.
+For more information on developing overlays, reference the [MITRE SAF Training](https://mitre-saf-training.netlify.app/courses/beginner/10.html)
+
+#### Example of tailoring Inputs *While Still Complying* with the security guidance document for the profile:
+
+```yaml
+  # This file specifies the attributes for the configurable controls
+  # used by the Microsoft IIS 8.5 Site STIG profile.
+
+  # Disable controls that are known to consistently have long run times
+  disable_slow_controls: [true or false]
+
+  # A unique list of administrative users
+  admins_list: [admin1, admin2, admin3]
+
+  # List of configuration files for the specific system
+  logging_conf_files: [
+    <dir-path-1>/*.conf
+    <dir-path-2>/*.conf
+  ]
+  
+  ...
+```
+
+> [!NOTE]
+>Inputs are variables that are referenced by control(s) in the profile that implement them.
+ They are declared (defined) and given a default value in the `inspec.yml` file. 
+
+#### Using Customized Inputs
+Customized inputs may be used at the CLI by providing an input file or a flag at execution time.
+
+1. Using the `--input` flag
+  
+    Example: `[inspec or cinc-auditor] exec <my-profile.tar.gz> --input disable_slow_controls=true`
+
+2. Using the `--input-file` flag.
+    
+    Example: `[inspec or cinc-auditor] exec <my-profile.tar.gz> --input-file=<my_inputs_file.yml>`
+
+>[!TIP]
+> For additional information about `input` file examples reference the [MITRE SAF Training](https://mitre.github.io/saf-training/courses/beginner/06.html#input-file-example)
 
 Chef InSpec Resources:
 - [InSpec Profile Documentation](https://docs.chef.io/inspec/profiles/).
 - [InSpec Inputs](https://docs.chef.io/inspec/profiles/inputs/).
 - [inspec.yml](https://docs.chef.io/inspec/profiles/inspec_yml/).
 
->[!NOTE]
-> Inputs are variables that can be referenced by any control in the profile, and are defined
-  and given a default value in the `inspec.yml` file.
-
-Below is an example how the `inputs` are defined in the `inspec.yml`:
-```
-inputs:
-  # Skip controls that take a long time to test 
-  - name: disable_slow_controls
-    description: Controls that are known to consistently have long run times can be disabled with this attribute
-    type: Boolean
-    value: false
-
-  # List of configuration files for the specific system
-  - name: logging_conf_files
-    description: Configuration files for the logging service
-    type: Array
-    value:
-      - <dir-path-1>/*.conf
-      - <dir-path-2>/*.conf
-```
 
 [top](#table-of-contents)
 ### Testing the Profile Controls
-The Gemfile provided contains all necessary ruby dependencies for checking the profile controls.
+The Gemfile provided contains all the necessary ruby dependencies for checking the profile controls.
 #### Requirements
 All action are conducted using `ruby` (gemstone/programming language). Currently `inspec` 
 commands have been tested with ruby version 3.1.2. A higher version of ruby is not guaranteed to
@@ -124,27 +170,23 @@ Install ruby based on the OS being used, see [Installing Ruby](https://www.ruby-
 
 After installing `ruby` install the necessary dependencies by invoking the bundler command
 (must be in the same directory where the Gemfile is located):
-```
+```bash
 bundle install
 ```
 
 #### Testing Commands
-Ensure the controls are chef-style formatted:
-```
-  bundle exec cookstyle -a ./controls
-```
 
 Linting and validating controls:
-```
-  bundle exec rake inspec:check          # validate the inspec profile
-  bundle exec rake lint                  # Run RuboCop
-  bundle exec rake lint:autocorrect      # Autocorrect RuboCop offenses (only when it's safe)
-  bundle exec rake lint:autocorrect_all  # Autocorrect RuboCop offenses (safe and unsafe)
-  bundle exec rake pre_commit_checks     # pre-commit checks
+```bash
+  bundle exec rake [inspec or cinc-auditor]:check # validate the inspec profile
+  bundle exec rake lint                           # Run RuboCop
+  bundle exec rake lint:autocorrect               # Autocorrect RuboCop offenses (only when it's safe)
+  bundle exec rake lint:autocorrect_all           # Autocorrect RuboCop offenses (safe and unsafe)
+  bundle exec rake pre_commit_checks              # pre-commit checks
 ```
 
 Ensure the controls are ready to be committed into the repo:
-```
+```bash
   bundle exec rake pre_commit_checks
 ```
 
@@ -155,12 +197,12 @@ Ensure the controls are ready to be committed into the repo:
 This options is best used when network connectivity is available and policies permit
 access to the hosting repository.
 
-```
+```bash
 # Using `ssh` transport
-bundle exec inspec exec https://github.com/mitre/Microsoft IIS 8.5 Site Security Technical Implementation Guide/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/microsoft-iis-8.5-site-stig-baseline/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using `winrm` transport
-bundle exec inspec exec https://github.com/mitre/Microsoft IIS 8.5 Site Security Technical Implementation Guide/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
+bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/microsoft-iis-8.5-site-stig-baseline/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
 ```
 
 [top](#table-of-contents)
@@ -168,37 +210,37 @@ bundle exec inspec exec https://github.com/mitre/Microsoft IIS 8.5 Site Security
 If your runner is not always expected to have direct access to the profile's hosted location,
 use the following steps to create an archive bundle of this overlay and all of its dependent tests:
 
-(Git is required to clone the InSpec profile using the instructions below.
-Git can be downloaded from the [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) site.)
+Git is required to clone the InSpec profile using the instructions below.
+Git can be downloaded from the [Git Web Site](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
 When the **"runner"** host uses this profile overlay for the first time, follow these steps:
 
-```
+```bash
 mkdir profiles
 cd profiles
-git clone https://github.com/mitre/Microsoft IIS 8.5 Site Security Technical Implementation Guide.git
-bundle exec inspec archive Microsoft IIS 8.5 Site Security Technical Implementation Guide
+git clone https://github.com/mitre/microsoft-iis-8.5-site-stig-baseline.git
+bundle exec [inspec or cinc-auditor] archive microsoft-iis-8.5-site-stig-baseline
 
 # Using `ssh` transport
-bundle exec inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using `winrm` transport
-bundle exec inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
 ```
 
 For every successive run, follow these steps to always have the latest version of this profile baseline:
 
-```
-cd Microsoft IIS 8.5 Site Security Technical Implementation Guide
+```bash
+cd microsoft-iis-8.5-site-stig-baseline
 git pull
 cd ..
-bundle exec inspec archive Microsoft IIS 8.5 Site Security Technical Implementation Guide --overwrite
+bundle exec [inspec or cinc-auditor] archive microsoft-iis-8.5-site-stig-baseline --overwrite
 
 # Using `ssh` transport
-bundle exec inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using `winrm` transport
-bundle exec inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
 ```
 
 [top](#table-of-contents)
@@ -220,15 +262,33 @@ Heimdall can **_export your results into a DISA Checklist (CKL) file_** for easi
 Depending on your environment restrictions, the [SAF CLI](https://saf-cli.mitre.org) can be used to run a local docker instance
 of Heimdall-Lite via the `saf view:heimdall` command.
 
-Additionally both Heimdall applications can be deployed via docker, kurbernetes, or the installation packages.
+Additionally both Heimdall applications can be deployed via docker, kubernetes, or the installation packages.
 
 [top](#table-of-contents)
 ## Authors
-Defense Information Systems Agency (DISA) https://www.disa.mil/
+[Defense Information Systems Agency (DISA)](https://www.disa.mil/)
 
-STIG support by DISA Risk Management Team and Cyber Exchange https://public.cyber.mil/
+[STIG support by DISA Risk Management Team and Cyber Exchange](https://public.cyber.mil/)
 
-MITRE Security Automation Framework Team https://saf.mitre.org
+[MITRE Security Automation Framework Team](https://saf.mitre.org)
 
 ## NOTICE
-DISA STIGs are published by DISA IASE, see: https://iase.disa.mil/Pages/privacy_policy.aspx
+
+© 2018-2025 The MITRE Corporation.
+
+Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
+
+## NOTICE 
+
+MITRE hereby grants express written permission to use, reproduce, distribute, modify, and otherwise leverage this software to the extent permitted by the licensed terms provided in the LICENSE.md file included with this project.
+
+## NOTICE  
+
+This software was produced for the U. S. Government under Contract Number HHSM-500-2012-00008I, and is subject to Federal Acquisition Regulation Clause 52.227-14, Rights in Data-General.  
+
+No other use other than that granted to the U. S. Government, or to those acting on behalf of the U. S. Government under that Clause is authorized without the express written permission of The MITRE Corporation.
+
+For further information, please contact The MITRE Corporation, Contracts Management Office, 7515 Colshire Drive, McLean, VA  22102-7539, (703) 983-6000.
+
+## NOTICE
+[DISA STIGs are published by DISA IASE](https://public.cyber.mil/stigs/)
